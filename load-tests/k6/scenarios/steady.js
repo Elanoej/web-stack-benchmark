@@ -1,12 +1,12 @@
 import http from "k6/http"
 import { check, sleep } from "k6"
-import { BASE_URL, tresholds } from "../config.js"
+import { BASE_URL, thresholds } from "../config.js"
 
 export const options = {
     // Cenário: 50 usuários simultâneos por 30 segundos
     vus: 50,
     duration: "30s",
-    tresholds,
+    thresholds,
 }
 
 export default function() {

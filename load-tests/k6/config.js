@@ -5,7 +5,7 @@ export const BASE_URL = `http://localhost:${__ENV.PORT || 8080}`
 
 // Thresholds - critérios de sucesso/falha
 // O teste falha se esses limites forem ultrapassados
-export const tresholds = {
+export const thresholds = {
     // 95% das requisições devem responder em menos de 500ms
     http_req_duration: ['p(95)<500'],
 
