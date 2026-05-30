@@ -13,6 +13,10 @@ gradle-app.setting
 .gradletasknamecache
 *.kotlin_module
 
+# Gradle build output
+implementations/**/build/
+implementations/**/.gradle/
+
 # ─── Python ───────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
