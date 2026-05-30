@@ -1,62 +1,62 @@
 # web-stack-benchmark
 
-> Same database. Same data. Same load tests. Only the backend changes.
+> Mesmo banco de dados. Mesmos dados. Mesmos testes de carga. Só o backend muda.
 
-A structured benchmark comparing HTTP server stacks across different languages and concurrency models. Every implementation exposes identical endpoints, connects to the same PostgreSQL instance, and is tested with the same load scripts — isolating the backend as the only variable.
+Um benchmark estruturado comparando diferentes stacks HTTP em linguagens e modelos de concorrência distintos. Cada implementação expõe os mesmos endpoints, conecta na mesma instância do PostgreSQL e é testada com os mesmos scripts de carga — isolando o backend como única variável.
 
 ---
 
-## Goal
+## Objetivo
 
-Understand **how** and **why** different stacks perform the way they do — not just the numbers, but the concurrency model, memory usage, and behavior under pressure behind each result.
+Entender **como** e **por que** cada stack performa do jeito que performa — não só os números, mas o modelo de concorrência, uso de memória e comportamento sob pressão por trás de cada resultado.
 
 ---
 
 ## Stacks
 
-| # | Stack | Language | Model |
+| # | Stack | Linguagem | Modelo |
 |---|---|---|---|
-| 1 | Spring MVC | Kotlin | Thread-per-request (blocking) |
-| 2 | Spring WebFlux | Kotlin | Reactive / non-blocking |
-| 3 | FastAPI + Uvicorn | Python | Async I/O (single process) |
+| 1 | Spring MVC | Kotlin | Thread-per-request (bloqueante) |
+| 2 | Spring WebFlux | Kotlin | Reativo / non-blocking |
+| 3 | FastAPI + Uvicorn | Python | Async I/O (processo único) |
 | 4 | FastAPI + Gunicorn | Python | Multi-process workers |
 | 5 | Go net/http | Go | Goroutines |
 
 ---
 
-## Endpoints (identical across all stacks)
+## Endpoints (idênticos em todas as stacks)
 
 ```
-GET  /hello          → no I/O — measures raw framework overhead
-GET  /users          → SELECT with pagination — light I/O
-POST /users/search   → filtered query — real I/O with logic
+GET  /hello          → sem I/O — mede o overhead puro do framework
+GET  /users          → SELECT com paginação — I/O leve
+POST /users/search   → query com filtros — I/O real com lógica
 ```
 
 ---
 
-## Metrics
+## Métricas
 
-- **Throughput** — requests per second (RPS)
-- **Latency** — p50, p95, p99
-- **Memory** — RSS under load
-- **Concurrency** — behavior under 10, 100, 500 simultaneous connections
-- **Error rate** — drops and timeouts under stress
+- **Throughput** — requisições por segundo (RPS)
+- **Latência** — p50, p95, p99
+- **Memória** — RSS sob carga
+- **Concorrência** — comportamento com 10, 100 e 500 conexões simultâneas
+- **Taxa de erro** — drops e timeouts sob stress
 
 ---
 
-## Load Testing Tools
+## Ferramentas de Carga
 
-| Tool | Purpose |
+| Ferramenta | Propósito |
 |---|---|
-| `wrk` | Maximum RPS — raw throughput with minimal overhead |
-| `k6` | Realistic scenarios — ramp-up, spikes, thresholds |
-| `autocannon` | Quick smoke tests for CI |
+| `wrk` | RPS máximo — throughput bruto com overhead mínimo |
+| `k6` | Cenários realistas — ramp-up, picos, thresholds |
+| `autocannon` | Smoke tests rápidos para CI |
 
-All scripts are parameterized by port, so the same test runs against any backend without modification.
+Todos os scripts são parametrizados por porta, então o mesmo teste roda em qualquer backend sem modificação.
 
 ---
 
-## Architecture
+## Arquitetura
 
 ```
 ┌─────────┐     ┌───────┐     ┌─────────────────┐     ┌──────────┐
@@ -64,11 +64,11 @@ All scripts are parameterized by port, so the same test runs against any backend
 └─────────┘     └───────┘     └─────────────────┘     └──────────┘
 ```
 
-Each backend runs on its own port (`8081`, `8082`, ...). Nginx sits in front as a reverse proxy. All backends share the same PostgreSQL instance with the same seeded data.
+Cada backend sobe na sua própria porta (`8081`, `8082`, ...). O Nginx fica na frente como reverse proxy. Todos os backends compartilham a mesma instância do PostgreSQL com os mesmos dados.
 
 ---
 
-## Request Flow — FastAPI with Gunicorn
+## Fluxo de Requisição — FastAPI com Gunicorn
 
 ```mermaid
 sequenceDiagram
@@ -87,35 +87,35 @@ sequenceDiagram
 
 ---
 
-## Concurrency Models
+## Modelos de Concorrência
 
 ```mermaid
 flowchart LR
     subgraph MVC["Spring MVC — Thread-per-request"]
-        R1[Request 1] --> T1[Thread 1]
-        R2[Request 2] --> T2[Thread 2]
-        R3[Request 3] --> T3[Thread 3]
+        R1[Requisição 1] --> T1[Thread 1]
+        R2[Requisição 2] --> T2[Thread 2]
+        R3[Requisição 3] --> T3[Thread 3]
         T1 -->|blocking I/O| DB1[(PostgreSQL)]
         T2 -->|blocking I/O| DB1
         T3 -->|blocking I/O| DB1
     end
 
-    subgraph WebFlux["Spring WebFlux — Reactive"]
-        R4[Request 1] --> EL[Event Loop]
-        R5[Request 2] --> EL
-        R6[Request 3] --> EL
+    subgraph WebFlux["Spring WebFlux — Reativo"]
+        R4[Requisição 1] --> EL[Event Loop]
+        R5[Requisição 2] --> EL
+        R6[Requisição 3] --> EL
         EL -->|non-blocking| DB2[(PostgreSQL)]
     end
 ```
 
 ---
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 web-stack-benchmark/
 ├── infra/
-│   ├── docker-compose.yml       # full stack — all backends + postgres + nginx
+│   ├── docker-compose.yml       # stack completa — todos os backends + postgres + nginx
 │   ├── nginx/
 │   │   └── nginx.conf
 │   └── postgres/
@@ -142,13 +142,13 @@ web-stack-benchmark/
 │   ├── fastapi-gunicorn/
 │   └── go-stdlib/
 └── docs/
-    ├── methodology.md
-    ├── results.md
-    ├── architecture/
+    ├── metodologia.md
+    ├── resultados.md
+    ├── arquitetura/
     │   ├── spring-mvc.md
     │   ├── spring-webflux.md
     │   └── fastapi.md
-    └── concepts/
+    └── conceitos/
         ├── threads-vs-async.md
         ├── event-loop.md
         └── gil-python.md
@@ -156,42 +156,42 @@ web-stack-benchmark/
 
 ---
 
-## Running
+## Como Rodar
 
 ```bash
-# Start infrastructure
+# Subir a infraestrutura
 docker-compose -f infra/docker-compose.yml up -d
 
-# Run k6 against a specific backend (by port)
+# Rodar k6 em um backend específico (por porta)
 k6 run -e PORT=8081 load-tests/k6/scenarios/steady.js
 
-# Run wrk
+# Rodar wrk
 wrk -t4 -c100 -d30s http://localhost:8081/users
 
-# Run autocannon smoke test
+# Smoke test com autocannon
 node load-tests/autocannon/smoke.js --port 8081
 ```
 
 ---
 
-## Results
+## Resultados
 
-> Results will be published in [`docs/results.md`](docs/results.md) as each implementation is completed.
+> Os resultados serão publicados em [`docs/resultados.md`](docs/resultados.md) conforme cada implementação for concluída.
 
 ---
 
-## Docs
+## Documentação
 
-- [Methodology](docs/methodology.md) — how tests were conducted and what was controlled
-- [Threads vs Async](docs/concepts/threads-vs-async.md)
-- [Python GIL and why Gunicorn sometimes wins](docs/concepts/gil-python.md)
-- [Event Loop explained](docs/concepts/event-loop.md)
+- [Metodologia](docs/metodologia.md) — como os testes foram conduzidos e o que foi controlado
+- [Threads vs Async](docs/conceitos/threads-vs-async.md)
+- [GIL do Python e por que o Gunicorn às vezes vence](docs/conceitos/gil-python.md)
+- [Event Loop explicado](docs/conceitos/event-loop.md)
 
 ---
 
 ## Status
 
-| Stack | Implemented | Tested | Documented |
+| Stack | Implementado | Testado | Documentado |
 |---|---|---|---|
 | Spring MVC (Kotlin) | 🚧 | ⬜ | ⬜ |
 | Spring WebFlux (Kotlin) | ⬜ | ⬜ | ⬜ |
@@ -201,6 +201,6 @@ node load-tests/autocannon/smoke.js --port 8081
 
 ---
 
-## License
+## Licença
 
 MIT
