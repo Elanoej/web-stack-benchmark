@@ -8,21 +8,24 @@
 # Serviços SEM profile sobem sempre (postgres, nginx).
 # Serviços COM profile só sobem quando você pede.
 #
+# O BACKEND_HOST é configurável via variável de ambiente
+# para o nginx saber para onde rotear as requisições.
+#
 # Uso:
-#   # Só a infra base (postgres)
+#   # Só a infra base (postgres + nginx — sem backend)
 #   docker compose up
 #
-#   # Infra + um backend específico
-#   docker compose --profile spring-mvc up
-#   docker compose --profile spring-webflux up
-#   docker compose --profile fastapi-async up
-#   docker compose --profile fastapi-gunicorn up
-#   docker compose --profile go-stdlib up
+#   # Infra + backend específico
+#   BACKEND_HOST=spring-mvc     docker compose --profile spring-mvc up
+#   BACKEND_HOST=spring-webflux docker compose --profile spring-webflux up
+#
+#   # Resetar banco
+#   docker compose --profile <perfil> down -v
 #
 # Ordem de inicialização:
-#   1. postgres     (sem profile — sobe sempre)
-#   2. nginx        (sem profile — sobe sempre)
-#   3. backend      (só o do profile escolhido)
+#   1. postgres   (sem profile — sobe sempre)
+#   2. nginx      (sem profile — sobe sempre)
+#   3. backend    (só o do profile escolhido)
 # =============================================================
 
 services:
@@ -49,20 +52,27 @@ services:
       retries: 10
 
   # ─── Nginx (reverse proxy) ────────────────────────────────────
-  # Também sem profile. Sobe sempre, mas só roteia para o
-  # backend que estiver ativo. Se o backend não subiu, o Nginx
-  # simplesmente retorna 502 naquela porta — sem problema.
+  # Sem profile. Sobe sempre, mas só roteia para o backend
+  # que você especificar via BACKEND_HOST. Se o backend não
+  # subiu, retorna 502 — sem problema.
+  #
+  #   BACKEND_HOST=spring-mvc docker compose --profile spring-mvc up
+  #
   nginx:
     image: nginx:alpine
     container_name: benchmark-nginx
+
     ports:
-      - "8081:8081"   # → spring-mvc
-      - "8082:8082"   # → spring-webflux
-      - "8083:8083"   # → fastapi-async
-      - "8084:8084"   # → fastapi-gunicorn
-      - "8085:8085"   # → go-stdlib
+      - "8080:8080"
+
+    environment:
+      BACKEND_HOST: ${BACKEND_HOST:-spring-webflux}
+      BACKEND_PORT: ${BACKEND_PORT:-8080}
+
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,7 +84,7 @@ services:
   spring-mvc:
     profiles: ["spring-mvc"]
     build:
-      context: ../../implementations/spring-mvc-kotlin
+      context: ../implementations/spring-mvc-kotlin
       dockerfile: Dockerfile
     container_name: benchmark-spring-mvc
     environment:
@@ -92,7 +102,7 @@ services:
   spring-webflux:
     profiles: ["spring-webflux"]
     build:
-      context: ../../implementations/spring-webflux-kotlin
+      context: ../implementations/spring-webflux-kotlin
       dockerfile: Dockerfile
     container_name: benchmark-spring-webflux
     environment:
@@ -112,7 +122,7 @@ services:
   fastapi-async:
     profiles: ["fastapi-async"]
     build:
-      context: ../../implementations/fastapi-async
+      context: ../implementations/fastapi-async
       dockerfile: Dockerfile
     container_name: benchmark-fastapi-async
     environment:
@@ -128,7 +138,7 @@ services:
   fastapi-gunicorn:
     profiles: ["fastapi-gunicorn"]
     build:
-      context: ../../implementations/fastapi-gunicorn
+      context: ../implementations/fastapi-gunicorn
       dockerfile: Dockerfile
     container_name: benchmark-fastapi-gunicorn
     environment:
@@ -142,7 +152,7 @@ services:
   go-stdlib:
     profiles: ["go-stdlib"]
     build:
-      context: ../../implementations/go-stdlib
+      context: ../implementations/go-stdlib
       dockerfile: Dockerfile
     container_name: benchmark-go-stdlib
     environment:
