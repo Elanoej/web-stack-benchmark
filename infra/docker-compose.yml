@@ -1,0 +1,160 @@
+# =============================================================
+# docker-compose.yml — web-stack-benchmark
+# =============================================================
+#
+# CONCEITO: Docker Compose Profiles
+#
+# Profiles permitem subir apenas parte dos serviços.
+# Serviços SEM profile sobem sempre (postgres, nginx).
+# Serviços COM profile só sobem quando você pede.
+#
+# Uso:
+#   # Só a infra base (postgres)
+#   docker compose up
+#
+#   # Infra + um backend específico
+#   docker compose --profile spring-mvc up
+#   docker compose --profile spring-webflux up
+#   docker compose --profile fastapi-async up
+#   docker compose --profile fastapi-gunicorn up
+#   docker compose --profile go-stdlib up
+#
+# Ordem de inicialização:
+#   1. postgres     (sem profile — sobe sempre)
+#   2. nginx        (sem profile — sobe sempre)
+#   3. backend      (só o do profile escolhido)
+# =============================================================
+
+services:
+
+  # ─── Banco de dados ──────────────────────────────────────────
+  # Sem profile = sobe com qualquer comando "docker compose up"
+  postgres:
+    image: postgres:16-alpine
+    container_name: benchmark-postgres
+    environment:
+      POSTGRES_DB:       benchmark
+      POSTGRES_USER:     bench
+      POSTGRES_PASSWORD: bench123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./postgres/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bench -d benchmark"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── Nginx (reverse proxy) ────────────────────────────────────
+  # Também sem profile. Sobe sempre, mas só roteia para o
+  # backend que estiver ativo. Se o backend não subiu, o Nginx
+  # simplesmente retorna 502 naquela porta — sem problema.
+  nginx:
+    image: nginx:alpine
+    container_name: benchmark-nginx
+    ports:
+      - "8081:8081"   # → spring-mvc
+      - "8082:8082"   # → spring-webflux
+      - "8083:8083"   # → fastapi-async
+      - "8084:8084"   # → fastapi-gunicorn
+      - "8085:8085"   # → go-stdlib
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Backend 1: Spring MVC (Kotlin) ──────────────────────────
+  # profiles: ["spring-mvc"] significa que este serviço SÓ sobe
+  # quando você rodar: docker compose --profile spring-mvc up
+  spring-mvc:
+    profiles: ["spring-mvc"]
+    build:
+      context: ../../implementations/spring-mvc-kotlin
+      dockerfile: Dockerfile
+    container_name: benchmark-spring-mvc
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://postgres:5432/benchmark
+      SPRING_DATASOURCE_USERNAME: bench
+      SPRING_DATASOURCE_PASSWORD: bench123
+      # JDBC — driver bloqueante. Cada query ocupa uma thread
+      # até a resposta chegar. Modelo clássico do Spring MVC.
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Backend 2: Spring WebFlux (Kotlin) ──────────────────────
+  spring-webflux:
+    profiles: ["spring-webflux"]
+    build:
+      context: ../../implementations/spring-webflux-kotlin
+      dockerfile: Dockerfile
+    container_name: benchmark-spring-webflux
+    environment:
+      SPRING_R2DBC_URL:      r2dbc:postgresql://postgres:5432/benchmark
+      SPRING_R2DBC_USERNAME: bench
+      SPRING_R2DBC_PASSWORD: bench123
+      # R2DBC — driver reativo/non-blocking. A thread não fica
+      # presa esperando o banco. Necessário para WebFlux fazer sentido.
+      # Usar JDBC com WebFlux seria como colocar motor elétrico
+      # num carro e ainda assim encher o tanque de gasolina.
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Backend 3: FastAPI async (Uvicorn) ──────────────────────
+  fastapi-async:
+    profiles: ["fastapi-async"]
+    build:
+      context: ../../implementations/fastapi-async
+      dockerfile: Dockerfile
+    container_name: benchmark-fastapi-async
+    environment:
+      DATABASE_URL: postgresql+asyncpg://bench:bench123@postgres:5432/benchmark
+      # asyncpg — driver async para Postgres em Python.
+      # Roda dentro do event loop do asyncio, sem bloquear.
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Backend 4: FastAPI + Gunicorn ───────────────────────────
+  fastapi-gunicorn:
+    profiles: ["fastapi-gunicorn"]
+    build:
+      context: ../../implementations/fastapi-gunicorn
+      dockerfile: Dockerfile
+    container_name: benchmark-fastapi-gunicorn
+    environment:
+      DATABASE_URL: postgresql+asyncpg://bench:bench123@postgres:5432/benchmark
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Backend 5: Go net/http ───────────────────────────────────
+  go-stdlib:
+    profiles: ["go-stdlib"]
+    build:
+      context: ../../implementations/go-stdlib
+      dockerfile: Dockerfile
+    container_name: benchmark-go-stdlib
+    environment:
+      DATABASE_URL: postgres://bench:bench123@postgres:5432/benchmark?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+# ─── Volumes ──────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    # Para resetar o banco e re-rodar o seed:
+    # docker compose down -v
+    # docker compose up
