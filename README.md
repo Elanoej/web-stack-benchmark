@@ -64,7 +64,7 @@ Todos os scripts são parametrizados por porta, então o mesmo teste roda em qua
 └─────────┘     └───────┘     └─────────────────┘     └──────────┘
 ```
 
-Cada backend sobe na sua própria porta (`8081`, `8082`, ...). O Nginx fica na frente como reverse proxy. Todos os backends compartilham a mesma instância do PostgreSQL com os mesmos dados.
+O Nginx (porta `8080`) fica na frente como reverse proxy e roteia para o backend selecionado via profile. Todos os backends compartilham a mesma instância do PostgreSQL com os mesmos dados.
 
 ---
 
@@ -115,9 +115,9 @@ flowchart LR
 ```
 web-stack-benchmark/
 ├── infra/
-│   ├── docker-compose.yml       # stack completa — todos os backends + postgres + nginx
+│   ├── docker-compose.yml       # stack completa — perfis de backend + postgres + nginx
 │   ├── nginx/
-│   │   └── nginx.conf
+│   │   └── nginx.conf.template  # reverse proxy config (envsubst)
 │   └── postgres/
 │       ├── schema.sql
 │       └── seed.sql
@@ -159,17 +159,19 @@ web-stack-benchmark/
 ## Como Rodar
 
 ```bash
-# Subir a infraestrutura
-docker-compose -f infra/docker-compose.yml up -d
+# Subir infra + backend específico (do diretório infra/)
+BACKEND_HOST=spring-mvc     docker compose --profile spring-mvc up
+BACKEND_HOST=spring-webflux docker compose --profile spring-webflux up
 
-# Rodar k6 em um backend específico (por porta)
-k6 run -e PORT=8081 load-tests/k6/scenarios/steady.js
+# Ou de qualquer lugar (especificando o arquivo)
+BACKEND_HOST=spring-mvc docker compose -f infra/docker-compose.yml --profile spring-mvc up
 
-# Rodar wrk
-wrk -t4 -c100 -d30s http://localhost:8081/users
+# Rodar testes de carga (com o backend rodando em 8080)
+k6 run -e PORT=8080 load-tests/k6/scenarios/steady.js
+wrk -t4 -c100 -d30s http://localhost:8080/users
 
-# Smoke test com autocannon
-node load-tests/autocannon/smoke.js --port 8081
+# Resetar banco de dados
+docker compose --profile <perfil> down -v
 ```
 
 ---
@@ -191,10 +193,10 @@ node load-tests/autocannon/smoke.js --port 8081
 
 ## Status
 
-| Stack | Implementado | Testado | Documentado |
-|---|---|---|---|
-| Spring MVC (Kotlin) | 🚧 | ⬜ | ⬜ |
-| Spring WebFlux (Kotlin) | ⬜ | ⬜ | ⬜ |
+| Stack | Código | Docker | Testado |
+|---|---|---|---|---|
+| Spring MVC (Kotlin) | ✅ | ✅ | ⬜ |
+| Spring WebFlux (Kotlin) | ✅ | ✅ | ⬜ |
 | FastAPI async | ⬜ | ⬜ | ⬜ |
 | FastAPI + Gunicorn | ⬜ | ⬜ | ⬜ |
 | Go net/http | ⬜ | ⬜ | ⬜ |
