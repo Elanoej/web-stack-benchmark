@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -28,8 +28,8 @@ async def list_users(
         .limit(size)
     )
     result = await db.execute(stmt)
-    users = result.scalars().all()
-    return [UserResponse.model_validate(u) for u in users]
+    rows = result.scalars().all()
+    return [UserResponse.model_validate(r) for r in rows]
 
 
 @router.post("/users/search")
@@ -47,7 +47,6 @@ async def search_users(
         stmt = stmt.where(User.city.ilike(f"%{body.city}%"))
 
     stmt = stmt.order_by(User.created_at.desc()).offset(page * size).limit(size)
-
     result = await db.execute(stmt)
-    users = result.scalars().all()
-    return [UserResponse.model_validate(u) for u in users]
+    rows = result.scalars().all()
+    return [UserResponse.model_validate(r) for r in rows]
