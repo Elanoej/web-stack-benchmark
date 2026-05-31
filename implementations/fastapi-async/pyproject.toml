@@ -7,15 +7,14 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.136.3",
     "uvicorn[standard]>=0.34.0",
-    "sqlalchemy[asyncio]>=2.0.40",
     "asyncpg>=0.30.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "pydantic>=2.0.0",
     "pydantic-settings>=2.7.0",
+    "orjson>=3.10.0",
 ]
 
-[project.scripts]
-fastapi-async = "app.main:app"
+[tool.uv]
 
 [dependency-groups]
 dev = []
-
-[tool.uv]
