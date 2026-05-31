@@ -50,6 +50,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - benchmark-network
 
   # ─── Nginx (reverse proxy) ────────────────────────────────────
   # Sem profile. Sobe sempre, mas só roteia para o backend
@@ -77,6 +79,8 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - benchmark-network
 
   # ─── Backend 1: Spring MVC (Kotlin) ──────────────────────────
   # profiles: ["spring-mvc"] significa que este serviço SÓ sobe
@@ -97,6 +101,8 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - benchmark-network
 
   # ─── Backend 2: Spring WebFlux (Kotlin) ──────────────────────
   spring-webflux:
@@ -117,6 +123,8 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - benchmark-network
 
   # ─── Backend 3: FastAPI async (Uvicorn) ──────────────────────
   fastapi-async:
@@ -161,6 +169,9 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+
+networks:
+  benchmark-network:
 
 # ─── Volumes ──────────────────────────────────────────────────
 volumes:
