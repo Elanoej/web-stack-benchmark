@@ -25,7 +25,7 @@
 **Objetivo:** medir throughput sustentado e latência sob pressão constante.
   
 | Métrica | Spring MVC | Spring WebFlux | FastAPI Async |
-|---|---|---|---|---|
+|---|---|---|---|
 | Throughput | 2.953 req/s | 2.226 req/s | 566 req/s |
 | Latência média | 67.49ms | 89.59ms | 350.30ms |
 | Latência mediana (p50) | 89.76ms | 24.40ms | 316.13ms |
@@ -61,7 +61,7 @@
 **Objetivo:** encontrar o ponto onde cada backend começa a degradar.
  
 | Métrica | Spring MVC | Spring WebFlux | FastAPI Async |
-|---|---|---|---|---|
+|---|---|---|---|
 | Throughput | 2.969 req/s | 2.189 req/s | 577 req/s |
 | Latência média | 72.67ms | 100.32ms | 381.63ms |
 | Latência mediana (p50) | 55.51ms | 20.64ms | 82.66ms |
@@ -98,7 +98,7 @@
 **Objetivo:** medir resiliência — o backend absorve o pico? Se recupera depois?
  
 | Métrica | Spring MVC | Spring WebFlux | FastAPI Async |
-|---|---|---|---|---|
+|---|---|---|---|
 | Throughput | 1.612 req/s | 1.686 req/s | 358 req/s |
 | Latência média | 50.72ms | 49.79ms | 358.66ms |
 | Latência mediana (p50) | 11.02ms | 2.44ms | 65.56ms |
