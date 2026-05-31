@@ -24,7 +24,7 @@ for scenario in "${SCENARIOS[@]}"; do
     echo "  Run $run/$RUNS..."
     k6 run "$SCENARIOS_DIR/${scenario}.js" \
       --summary-export "$export_file" \
-      --quiet 2>/dev/null
+      --quiet 2>/dev/null || true
     echo "    -> $export_file"
   done
 done

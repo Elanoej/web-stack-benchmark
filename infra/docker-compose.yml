@@ -141,6 +141,8 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - benchmark-network
 
   # ─── Backend 4: FastAPI + Gunicorn ───────────────────────────
   fastapi-gunicorn:

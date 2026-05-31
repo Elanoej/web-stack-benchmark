@@ -1,0 +1,21 @@
+[project]
+name = "fastapi-async"
+version = "0.1.0"
+description = "FastAPI async benchmark implementation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.136.3",
+    "uvicorn[standard]>=0.34.0",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "asyncpg>=0.30.0",
+    "pydantic-settings>=2.7.0",
+]
+
+[project.scripts]
+fastapi-async = "app.main:app"
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
