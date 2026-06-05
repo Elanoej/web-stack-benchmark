@@ -10,14 +10,14 @@
 
 | Métrica | spring-mvc | spring-webflux | fastapi-async |
 |---|------|---|---|
-| Throughput (req/s) | 2895 | 2000 | 1583 |
-| Latência média (ms) | 68.75 | 99.75 | 125.80 |
-| Latência p50 (ms) | 19.79 | 104.13 | 135.58 |
-| Latência p90 (ms) | 175.44 | 188.97 | 248.15 |
-| Latência p95 (ms) | 297.97 | 221.86 | 292.52 |
-| Latência máxima (ms) | 5191 | 2633 | 1612 |
-| Total requisições | 87456 | 60213 | 47847 |
-| Erros | 63.09% | 15.86% | 0.00% |
+| Throughput (req/s) | 2049 | 2016 | 1579 |
+| Latência média (ms) | 97.18 | 98.90 | 125.98 |
+| Latência p50 (ms) | 98.34 | 103.25 | 91.21 |
+| Latência p90 (ms) | 217.50 | 187.64 | 255.21 |
+| Latência p95 (ms) | 299.62 | 209.14 | 345.08 |
+| Latência máxima (ms) | 1898 | 2617 | 1603 |
+| Total requisições | 61815 | 60744 | 47811 |
+| Erros | 0.00% | 13.91% | 0.00% |
 
 ---
 
@@ -25,14 +25,14 @@
 
 | Métrica | spring-mvc | spring-webflux | fastapi-async |
 |---|------|---|---|
-| Throughput (req/s) | 2886 | 4470 | 1630 |
-| Latência média (ms) | 74.79 | 48.20 | 133.05 |
-| Latência p50 (ms) | 57.51 | 30.25 | 65.76 |
-| Latência p90 (ms) | 178.26 | 131.50 | 370.32 |
-| Latência p95 (ms) | 205.43 | 151.28 | 464.06 |
-| Latência máxima (ms) | 952 | 189 | 2654 |
-| Total requisições | 230883 | 357624 | 130413 |
-| Erros | 0.02% | 0.01% | 0.00% |
+| Throughput (req/s) | 3079 | 4400 | 1599 |
+| Latência média (ms) | 70.05 | 48.96 | 135.63 |
+| Latência p50 (ms) | 55.02 | 30.31 | 67.71 |
+| Latência p90 (ms) | 166.10 | 135.83 | 374.33 |
+| Latência p95 (ms) | 186.47 | 152.36 | 452.63 |
+| Latência máxima (ms) | 597 | 193 | 2193 |
+| Total requisições | 246315 | 352011 | 127917 |
+| Erros | 0.01% | 0.01% | 0.00% |
 
 ---
 
@@ -40,13 +40,13 @@
 
 | Métrica | spring-mvc | spring-webflux | fastapi-async |
 |---|------|---|---|
-| Throughput (req/s) | 1605 | 2067 | 1158 |
-| Latência média (ms) | 51.10 | 32.08 | 89.32 |
-| Latência p50 (ms) | 10.80 | 1.87 | 9.14 |
-| Latência p90 (ms) | 165.70 | 115.00 | 366.18 |
-| Latência p95 (ms) | 183.41 | 119.68 | 442.60 |
-| Latência máxima (ms) | 673 | 148 | 2344 |
-| Total requisições | 120465 | 155109 | 83026 |
+| Throughput (req/s) | 1650 | 2058 | 1192 |
+| Latência média (ms) | 48.75 | 32.39 | 85.97 |
+| Latência p50 (ms) | 10.49 | 1.83 | 7.64 |
+| Latência p90 (ms) | 157.14 | 114.81 | 366.42 |
+| Latência p95 (ms) | 170.71 | 120.92 | 442.09 |
+| Latência máxima (ms) | 551 | 161 | 2325 |
+| Total requisições | 123828 | 154404 | 85349 |
 | Erros | 0.00% | 0.00% | 0.00% |
 
 ---
@@ -55,9 +55,9 @@
 
 | Cenário | 1º | 2º | 3º |
 |---|---|---|---|
-| Steady State | spring-mvc (2895 req/s) | spring-webflux (2000 req/s) | fastapi-async (1583 req/s) |
-| Ramp-up | spring-webflux (4470 req/s) | spring-mvc (2886 req/s) | fastapi-async (1630 req/s) |
-| Spike | spring-webflux (2067 req/s) | spring-mvc (1605 req/s) | fastapi-async (1158 req/s) |
+| Steady State | spring-mvc (2049 req/s) | spring-webflux (2016 req/s) | fastapi-async (1579 req/s) |
+| Ramp-up | spring-webflux (4400 req/s) | spring-mvc (3079 req/s) | fastapi-async (1599 req/s) |
+| Spike | spring-webflux (2058 req/s) | spring-mvc (1650 req/s) | fastapi-async (1192 req/s) |
 
 ## Observações
 

@@ -3,10 +3,10 @@
 import json, os, sys
 
 base_dir = os.path.join(os.path.dirname(__file__), "../..", "docs", "results")
-configs = ["1cpus-1gb", "2cpus", "4cpus-4gb", "8cpus-8gb", "12cpus-12gb"]
+configs = ["1cpus-1gb", "2cpus-2gb", "4cpus-4gb", "8cpus-8gb", "12cpus-12gb"]
 config_labels = {
     "1cpus-1gb": "1 CPU / 1GB",
-    "2cpus": "2 CPUs / 2GB",
+    "2cpus-2gb": "2 CPUs / 2GB",
     "4cpus-4gb": "4 CPUs / 4GB",
     "8cpus-8gb": "8 CPUs / 8GB",
     "12cpus-12gb": "12 CPUs / 12GB",
@@ -47,7 +47,7 @@ def fmt_ms(v):
     return f"{v:.0f}" if v else "—"
 
 def fmt_pct(v):
-    return f"{v:.2f}%" if v else "—"
+    return f"{v:.2f}%" if v is not None else "—"
 
 md = []
 md.append("# Benchmarks — Curva de escalabilidade")
