@@ -11,6 +11,9 @@ log_format benchmark '$remote_addr - $upstream_addr '
                      'rt=$request_time ut=$upstream_response_time';
 
 upstream benchmark_backend {
+    keepalive 64;
+    keepalive_requests 100;
+    keepalive_timeout 60s;
     server ${BACKEND_HOST}:${BACKEND_PORT};
 }
 
@@ -21,6 +24,9 @@ server {
 
     location / {
         proxy_pass         http://benchmark_backend;
+
+        proxy_http_version 1.1;
+        proxy_set_header   Connection "";
 
         proxy_set_header   Host $host;
         proxy_set_header   X-Real-IP $remote_addr;
