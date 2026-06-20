@@ -9,8 +9,8 @@ use axum::{
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::{PgPool, postgres::PgPoolOptions};
-use std::{env, sync::Arc};
+use sqlx::{PgPool, postgres::{PgConnectOptions, PgPoolOptions}};
+use std::{env, str::FromStr, sync::Arc};
 use uuid::Uuid;
  
 
@@ -65,9 +65,14 @@ async fn main() {
     // liberando a thread para outras tasks enquanto espera.
     // .expect() faz o programa crashar com a mensagem se der erro —
     // adequado para erros fatais de inicialização.
+
+    let connect_options = PgConnectOptions::from_str(&database_url)
+        .expect("URL inválida")
+        .statement_cache_capacity(100);
+
     let pool = PgPoolOptions::new()
         .max_connections(20)
-        .connect(&database_url)
+        .connect_with(connect_options)
         .await
         .expect("Falha ao conectar no PostgreSQL");
 
