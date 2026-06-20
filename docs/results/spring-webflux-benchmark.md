@@ -122,6 +122,6 @@ Usando ramp-up (cenário mais estável):
 |---|---|---|
 | **Steady State** | 12 CPUs (6.507/s) | 0% erro em todas as configs; escala 44x |
 | **Ramp-up** | 12 CPUs (9.641/s) | Escala 19x; única stack sem platô |
-| **Spike** | 12 CPUs (3.171/s, p95 28ms) | 0% erro; latência irreal |
+| **Spike** | 12 CPUs (3.171/s, p95 28ms) | 0% erro; latência excepcional |
 
 **Conclusão:** O Spring WebFlux é **superior em todos os cenários** — maior throughput, menor latência, 0% de erro em steady state em todas as configs (feito que nenhuma outra stack alcançou). É a única stack que **continua escalando** além de 4 CPUs, indicando que o modelo reativo com R2DBC consegue aproveitar recursos adicionais de forma quase linear. Se o objetivo é performance bruta, WebFlux é a escolha clara.
