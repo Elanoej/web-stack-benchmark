@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -42,7 +43,7 @@ func main() {
 	}
 	cfg.MaxConns = 20
 
-	pool, err := pgxpool.NewWithConfig(nil, cfg)
+	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
