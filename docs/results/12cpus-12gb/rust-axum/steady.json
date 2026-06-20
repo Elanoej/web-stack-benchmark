@@ -1,0 +1,147 @@
+{
+    "metrics": {
+        "vus_max": {
+            "value": 200,
+            "min": 200,
+            "max": 200
+        },
+        "http_req_connecting": {
+            "med": 0,
+            "max": 15.276547,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.002246380395138919,
+            "min": 0
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 71013,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_reqs": {
+            "count": 71013,
+            "rate": 2348.744305361475
+        },
+        "data_sent": {
+            "count": 7740417,
+            "rate": 256013.1292844008
+        },
+        "http_req_receiving": {
+            "avg": 0.036776649416304166,
+            "min": 0.012458,
+            "med": 0.03531,
+            "max": 0.691696,
+            "p(90)": 0.0476438,
+            "p(95)": 0.05157459999999995
+        },
+        "data_received": {
+            "count": 209819744,
+            "rate": 6939756.507574705
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 84.73543137902948,
+            "min": 0.16587,
+            "med": 97.748971,
+            "max": 237.131254,
+            "p(90)": 166.8257906,
+            "p(95)": 177.9259164
+        },
+        "iterations": {
+            "count": 23671,
+            "rate": 782.9147684538251
+        },
+        "vus": {
+            "value": 200,
+            "min": 200,
+            "max": 200
+        },
+        "http_req_sending": {
+            "avg": 0.015553935434357135,
+            "min": 0.005322,
+            "med": 0.010293,
+            "max": 15.501849,
+            "p(90)": 0.015702800000000003,
+            "p(95)": 0.017911399999999994
+        },
+        "http_req_waiting": {
+            "avg": 84.68310079417824,
+            "min": 0.137142,
+            "med": 97.701742,
+            "max": 237.053437,
+            "p(90)": 166.7755358,
+            "p(95)": 177.8763986
+        },
+        "iteration_duration": {
+            "avg": 254.46543590794442,
+            "min": 61.623062,
+            "med": 254.12971,
+            "max": 338.995209,
+            "p(90)": 271.000976,
+            "p(95)": 276.48605499999996
+        },
+        "checks": {
+            "fails": 0,
+            "passes": 71013,
+            "value": 1
+        },
+        "http_req_duration": {
+            "med": 97.748971,
+            "max": 237.131254,
+            "p(90)": 166.8257906,
+            "p(95)": 177.9259164,
+            "avg": 84.73543137902948,
+            "min": 0.16587,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "http_req_blocked": {
+            "avg": 0.007805703476828216,
+            "min": 0.001911,
+            "med": 0.003304,
+            "max": 16.833601,
+            "p(90)": 0.00452,
+            "p(95)": 0.0048453999999999945
+        },
+        "http_req_tls_handshaking": {
+            "p(95)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0
+        }
+    },
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "hello: status 200": {
+                    "name": "hello: status 200",
+                    "path": "::hello: status 200",
+                    "id": "7058b50c81b6576ebc0a925161dc4c75",
+                    "passes": 23671,
+                    "fails": 0
+                },
+                "users: status 200": {
+                    "fails": 0,
+                    "name": "users: status 200",
+                    "path": "::users: status 200",
+                    "id": "6602b84c5a5775f2fd4994c761780b2a",
+                    "passes": 23671
+                },
+                "search: status 200": {
+                    "name": "search: status 200",
+                    "path": "::search: status 200",
+                    "id": "cd68838b4cc6f7786becc08340f51f71",
+                    "passes": 23671,
+                    "fails": 0
+                }
+            },
+        "name": "",
+        "path": ""
+    }
+}
