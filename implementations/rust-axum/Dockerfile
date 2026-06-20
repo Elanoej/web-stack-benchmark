@@ -1,25 +1,54 @@
-FROM rust:alpine AS builder
-
-RUN apk add --no-cache musl-dev pkgconfig openssl-dev
-
+# =============================================================
+# Estágio 1 — chef
+# Imagem base com cargo-chef instalado.
+# cargo-chef resolve o problema de cache de dependências:
+# compila só as deps primeiro, e só recompila o código fonte
+# quando o src/ muda — não as deps.
+# =============================================================
+FROM lukemathwalker/cargo-chef:latest-rust-1.96.0 AS chef
 WORKDIR /app
 
-RUN mkdir src && echo 'fn main() {}' > src/main.rs
+# =============================================================
+# Estágio 2 — planner
+# Analisa o projeto e gera um "recipe" — um snapshot das
+# dependências necessárias, sem o código fonte.
+# =============================================================
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release 2>&1 || true
+# =============================================================
+# Estágio 3 — builder
+# Compila as dependências usando o recipe (camada cacheável),
+# depois copia o código e compila o binário final.
+# =============================================================
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
 
-COPY src src
-RUN cargo build --release
+COPY . .
+RUN cargo build --release --bin rust-axum
 
-FROM alpine:3.19
+# =============================================================
+# Estágio 4 — runtime
+# Imagem mínima — só o binário e as libs do sistema.
+# Resultado final ~100MB vs ~2GB do estágio de build.
+# =============================================================
+FROM debian:bookworm-slim AS runtime
 
-RUN apk add --no-cache libgcc
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Usuário não-root — boa prática de segurança em containers
+RUN useradd -u 1001 -m appuser
 
 WORKDIR /app
 
 COPY --from=builder /app/target/release/rust-axum .
 
 EXPOSE 8080
+
+USER appuser
 
 ENTRYPOINT ["./rust-axum"]

@@ -69,8 +69,6 @@ async fn main() {
         .await
         .expect("Falha ao conectar no PostgreSQL");
 
-     // configura o pool — mesmo padrão dos outros backends
-     sqlx::pool::PoolOptions::<sqlx::Postgres>::new();
 
     let state = AppState {
         db: Arc::new(pool),
