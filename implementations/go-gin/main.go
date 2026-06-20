@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,9 +18,9 @@ type User struct {
 	Email     string `json:"email"`
 	City      string `json:"city"`
 	Country   string `json:"country"`
-	Age       string `json:"age"`
-	Active    string `json:"active"`
-	CreatedAt string `json:"created_at"`
+	Age       int `json:"age"`
+	Active    bool `json:"active"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type SearchRequest struct {
@@ -108,7 +109,7 @@ func main() {
 		}
 
 		query := `
-			SELECT id, name, email, city, country, age, active, created_At
+			SELECT id, name, email, city, country, age, active, created_at
 			FROM users WHERE active = true
 		`
 
