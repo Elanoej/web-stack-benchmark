@@ -9,8 +9,8 @@ use axum::{
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::{PgPool, postgres::{PgConnectOptions, PgPoolOptions}};
-use std::{env, str::FromStr, sync::Arc};
+use sqlx::{PgPool, QueryBuilder, postgres::{PgConnectOptions, PgPoolOptions}};
+use std::{env, str::FromStr, sync::Arc, thread};
 use uuid::Uuid;
  
 
@@ -51,57 +51,57 @@ pub struct AppState {
 
 
 // Entry point
-#[tokio::main]
-async fn main() {
-    let database_url = env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable".to_string());
+fn main() {
+    let available = thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1);
 
-    let port = env::var("PORT")
-        .unwrap_or_else(|_| "8080".to_string());
+    println!("CPUs disponíveis: {}", available);
 
-    // PgPool cria um pool de conexões com o Postgres.
-    // connect_lazy_with é async — espera a conexão ser estabelecida.
-    // Em Rust, .await suspende a função até o Future resolver,
-    // liberando a thread para outras tasks enquanto espera.
-    // .expect() faz o programa crashar com a mensagem se der erro —
-    // adequado para erros fatais de inicialização.
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(available)
+        .enable_all()
+        .build()
+        .expect("Falha ao criar Tokio runtime");
 
-    let connect_options = PgConnectOptions::from_str(&database_url)
-        .expect("URL inválida")
-        .statement_cache_capacity(100);
+    runtime.block_on(async {
+        let database_url = env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable".to_string());
 
-    let pool = PgPoolOptions::new()
-        .max_connections(100)
-        .min_connections(20)
-        .connect_with(connect_options)
-        .await
-        .expect("Falha ao conectar no PostgreSQL");
+        let port = env::var("PORT")
+            .unwrap_or_else(|_| "8080".to_string());
 
+        let connect_options = PgConnectOptions::from_str(&database_url)
+            .expect("URL inválida")
+            .statement_cache_capacity(100);
 
-    let state = AppState {
-        db: Arc::new(pool),
-    };
+        let pool = PgPoolOptions::new()
+            .max_connections(100)
+            .connect_with(connect_options)
+            .await
+            .expect("Falha ao conectar no PostgreSQL");
 
-    // Router do Axum — equivalente ao r := gin.Default() do Go
-    // .with_state() injeta o AppState em todos os handlers
-    let app = Router::new()
-        .route("/users/hello", get(hello))
-        .route("/users", get(list_users))
-        .route("/users/search", post(search_users))
-        .with_state(state);
+        let state = AppState {
+            db: Arc::new(pool),
+        };
 
-    let addr = format!("0.0.0.0:{}", port);
-    println!("Servidor rodando em {}", addr);
+        let app = Router::new()
+            .route("/users/hello", get(hello))
+            .route("/users", get(list_users))
+            .route("/users/search", post(search_users))
+            .with_state(state);
 
-    // Axum usa o tokio::net::TcpListener para abrir a porta
-    let listener = tokio::net::TcpListener::bind(&addr)
-        .await
-        .expect("Falha ao abrir a porta");
+        let addr = format!("0.0.0.0:{}", port);
+        println!("Servidor rodando em {}", addr);
 
-    axum::serve(listener, app)
-        .await
-        .expect("Falha ao iniciar o servidor");
+        let listener = tokio::net::TcpListener::bind(&addr)
+            .await
+            .expect("Falha ao abrir a porta");
 
+        axum::serve(listener, app)
+            .await
+            .expect("Falha ao iniciar o servidor");
+    })
 }
 
 // =============================================================
@@ -163,31 +163,38 @@ async fn search_users(
 
     let offset = params.page * params.size;
 
-    // Em Rust não existe interpolação dinâmica de SQL segura fora
-    // de crates especializados. A abordagem mais limpa com sqlx
-    // é usar uma query com todos os parâmetros e tratar None/Some
-    // com IS NULL OR — mesmo padrão que usamos no Spring e FastAPI.
-
-    let users = sqlx::query_as::<_, User>(
+    let mut builder = QueryBuilder::new(
         "SELECT id, name, email, city, country, age, active, created_at
-        FROM users
-        WHERE active = true
-        
-        AND ($1::text IS NULL OR LOWER(name) LIKE LOWER(CONCAT('%', $1, '%')))
-        AND ($2::text IS NULL OR LOWER(city) LIKE LOWER(CONCAT('%', $2, '%')))
-        ORDER BY created_at DESC
-        LIMIT $3 OFFSET $4"
-    )
-    .bind(body.name)
-    .bind(body.city)
-    .bind(params.size)
-    .bind(offset)
-    .fetch_all(state.db.as_ref())
-    .await
-    .map_err(|e| (
-        StatusCode::INTERNAL_SERVER_ERROR,
-        Json(json!({ "error": e.to_string() }))
-    ))?;
+        FROM users WHERE active = true"
+    );
+
+    if let Some(name) = &body.name {
+        if !name.is_empty() {
+            builder.push(" AND name ILIKE ");
+            builder.push_bind(format!("%{}%", name));
+        }
+    }
+
+    if let Some(city) = &body.city {
+        if !city.is_empty() {
+            builder.push(" AND city ILIKE ");
+            builder.push_bind(format!("%{}%", city));
+        }
+    }
+
+    builder.push(" ORDER BY created_at DESC LIMIT ");
+    builder.push_bind(params.size);
+    builder.push(" OFFSET ");
+    builder.push_bind(offset);
+
+    let users = builder
+        .build_query_as::<User>()
+        .fetch_all(state.db.as_ref())
+        .await
+        .map_err(|e| (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "error": e.to_string() }))
+        ))?;
 
     Ok(Json(users))
 }
