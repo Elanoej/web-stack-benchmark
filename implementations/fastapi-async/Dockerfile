@@ -7,8 +7,8 @@ COPY app app
 
 RUN pip install uv && uv sync --frozen --no-dev
 
+COPY entrypoint.py .
+
 EXPOSE 5000
 
-ENV WORKERS=${WORKERS:-6}
-
-CMD uv run uvicorn app.main:app --host 0.0.0.0 --port 5000 --workers $WORKERS
+CMD ["uv", "run", "python", "entrypoint.py"]
