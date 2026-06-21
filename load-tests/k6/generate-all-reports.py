@@ -87,7 +87,7 @@ for cfg in configs:
         if s == "fastapi-async":
             w = cpu_num + 1
             workers_note += f" FastAPI com {w} workers."
-    md.append(f"> **Ambiente:** {cpu_num} CPUs, {mem_label} RAM por container. PostgreSQL via Docker.{workers_note}")
+    md.append(f"> **Ambiente:** {cpu_num} CPUs, {mem_label} RAM por container. PostgreSQL via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=10 + max_overflow=20).{workers_note}")
     md.append("> **Ferramenta:** k6 — 1 execução por cenário.")
     md.append("> **Endpoints:** `GET /users/hello`, `GET /users?page=0&size=20`, `POST /users/search`.")
     md.append("")
@@ -167,7 +167,7 @@ md = []
 md.append("# Benchmarks — Curva de escalabilidade")
 md.append("")
 md.append("> Mesmo banco, mesmos endpoints, mesmos scripts k6. Apenas o backend muda.")
-md.append("> Todas as stacks limitadas a CPU e RAM via Docker. FastAPI com WORKERS = CPUs + 1.")
+md.append("> Todas as stacks limitadas a CPU e RAM via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=10 + max_overflow=20). FastAPI com WORKERS = CPUs + 1.")
 md.append("")
 
 # ─── Throughput ────────────────────────────────────────────────────

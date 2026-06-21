@@ -1,14 +1,14 @@
 # Benchmarks — Curva de escalabilidade
 
 > Mesmo banco, mesmos endpoints, mesmos scripts k6. Apenas o backend muda.
-> Todas as stacks limitadas a CPU e RAM via Docker. FastAPI com WORKERS = CPUs + 1.
+> Todas as stacks limitadas a CPU e RAM via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=10 + max_overflow=20). FastAPI com WORKERS = CPUs + 1.
 
 ## Throughput (req/s)
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 3959 | 8038 | 10118 | 10921 | 10958 |
-| Rust + Axum (sqlx) | 7118 | 11829 | 13775 | 14319 | 14154 |
+| Rust + Axum (sqlx) | 7032 | 11860 | 14421 | 14762 | 14578 |
 | Spring WebFlux | 507 | 2094 | 4746 | 7629 | 9641 |
 | Spring MVC | 432 | 1185 | 3047 | 3062 | 3046 |
 | FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 |
@@ -20,7 +20,7 @@
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 2767 | 8234 | 12926 | 11281 | 11137 |
-| Rust + Axum (sqlx) | 6954 | 11965 | 14093 | 14632 | 14375 |
+| Rust + Axum (sqlx) | 4102 | 12228 | 14906 | 15332 | 15076 |
 | Spring WebFlux | 147 | 669 | 1932 | 4235 | 6507 |
 | Spring MVC | 113 | 896 | 1421 | 2464 | 2580 |
 | FastAPI Async (SQLAlchemy) | 2500 | 1798 | 2478 | 2287 | 1529 |
@@ -30,7 +30,7 @@
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 3959 | 8038 | 10118 | 10921 | 10958 |
-| Rust + Axum (sqlx) | 7118 | 11829 | 13775 | 14319 | 14154 |
+| Rust + Axum (sqlx) | 7032 | 11860 | 14421 | 14762 | 14578 |
 | Spring WebFlux | 507 | 2094 | 4746 | 7629 | 9641 |
 | Spring MVC | 432 | 1185 | 3047 | 3062 | 3046 |
 | FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 |
@@ -40,7 +40,7 @@
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 1910 | 2771 | 3331 | 3390 | 3379 |
-| Rust + Axum (sqlx) | 2624 | 3521 | 3758 | 3761 | 3761 |
+| Rust + Axum (sqlx) | 2645 | 3570 | 3759 | 3778 | 3777 |
 | Spring WebFlux | 1135 | 1631 | 2137 | 2792 | 3171 |
 | Spring MVC | 752 | 1659 | 1644 | 1643 | 1644 |
 | FastAPI Async (SQLAlchemy) | 454 | 938 | 1224 | 1237 | 1211 |
@@ -50,7 +50,7 @@
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 221.16 | 113.61 | 49.57 | 44.44 | 43.28 |
-| Rust + Axum (sqlx) | 92.58 | 55.24 | 34.63 | 33.43 | 33.68 |
+| Rust + Axum (sqlx) | 94.05 | 55.46 | 33.08 | 32.21 | 32.18 |
 | Spring WebFlux | 1112.80 | 267.44 | 141.47 | 87.67 | 67.99 |
 | Spring MVC | 1496.58 | 510.32 | 187.01 | 189.63 | 185.02 |
 | FastAPI Async (SQLAlchemy) | 1481.05 | 720.06 | 462.70 | 454.96 | 503.47 |
@@ -72,7 +72,7 @@
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
 |------|---|---|---|---|
 | Go + Gin (GORM) | 0.12% | 0.15% | 0.00% | 0.00% | 0.00% |
-| Rust + Axum (sqlx) | 0.04% | 0.34% | 0.00% | 0.00% | 0.00% |
+| Rust + Axum (sqlx) | 0.09% | 0.31% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.00% | 0.00% | 0.01% | 0.12% | 0.23% |
 | Spring MVC | 0.00% | 0.00% | 0.01% | 0.01% | 0.00% |
 | FastAPI Async (SQLAlchemy) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
@@ -92,7 +92,7 @@
 | Stack | 1 CPU | 2 CPUs | 4 CPUs | 8 CPUs | 12 CPUs | Escalabilidade |
 |---|---|---|---|---|---|---|
 | Go + Gin (GORM) | 3959 | 8038 | 10118 | 10921 | 10958 | 2.8x |
-| Rust + Axum (sqlx) | 7118 | 11829 | 13775 | 14319 | 14154 | 2.0x |
+| Rust + Axum (sqlx) | 7032 | 11860 | 14421 | 14762 | 14578 | 2.1x |
 | Spring WebFlux | 507 | 2094 | 4746 | 7629 | 9641 | 19.0x |
 | Spring MVC | 432 | 1185 | 3047 | 3062 | 3046 | 7.0x |
 | FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 | 3.0x |
@@ -135,7 +135,7 @@ Nestes cenários (carga variável com picos), todas as stacks têm erro < 0,3% e
 
 | # | Stack | Throughput | p95 | Erros | Escalabilidade |
 |---|---|---|---|---|---|
-| 1 | Rust + Axum (sqlx) | 14154 req/s | 34 ms | 0.00% | 2.0x |
+| 1 | Rust + Axum (sqlx) | 14578 req/s | 32 ms | 0.00% | 2.1x |
 | 2 | Go + Gin (GORM) | 10958 req/s | 43 ms | 0.00% | 2.8x |
 | 3 | Spring WebFlux | 9641 req/s | 68 ms | 0.23% | 19.0x |
 | 4 | Spring MVC | 3046 req/s | 185 ms | 0.00% | 7.0x |
