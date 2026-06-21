@@ -13,9 +13,10 @@ config_labels = {
     "8cpus-8gb": "8 CPUs / 8GB",
     "12cpus-12gb": "12 CPUs / 12GB",
 }
-stacks = ["go-gin", "spring-webflux", "spring-mvc", "fastapi-async"]
+stacks = ["go-gin", "rust-axum", "spring-webflux", "spring-mvc", "fastapi-async"]
 stack_labels = {
     "go-gin": "Go + Gin (GORM)",
+    "rust-axum": "Rust + Axum (sqlx)",
     "spring-webflux": "Spring WebFlux",
     "spring-mvc": "Spring MVC",
     "fastapi-async": "FastAPI Async (SQLAlchemy)",
@@ -279,10 +280,11 @@ md.append("")
 
 md.append("**Observações:**")
 md.append("")
-md.append("- **Go + Gin (GORM)**: **0% de erro em todas as configs** — a única stack que conseguiu. Mesmo com 1 CPU, sustenta 4.071 req/s sem uma única falha.")
-md.append("- **Spring WebFlux**: também 0% de erro em todas as configs, mas com throughput 50-55% menor que Go Gin.")
-md.append("- **Spring MVC**: 68% de erro em 2 CPUs — o pool de threads do modelo thread-per-request não sustenta 200 conexões simultâneas. A partir de 4 CPUs o erro zera, mas o throughput é 5x menor que Go Gin.")
-md.append("- **FastAPI Async (SQLAlchemy + Pydantic)**: 87% de erro em 1 CPU, melhorando progressivamente até zerar em 12 CPUs. O overhead do ORM (SQLAlchemy + Pydantic) associado ao GIL satura o event loop com poucos workers.")
+md.append("- **Rust + Axum (sqlx)**: **0% de erro em todas as configs**. A stack mais rápida em throughput geral e com a menor latência p95.")
+md.append("- **Go + Gin (GORM)**: **0% de erro em todas as configs**. Segunda colocada em throughput, mas com latência ligeiramente maior que Rust.")
+md.append("- **Spring WebFlux**: também 0% de erro em todas as configs, mas com throughput ~30-50% menor que Rust Axum.")
+md.append("- **Spring MVC**: sofre com o modelo thread-per-request em cargas mais altas. O throughput é limitado pelo pool de threads do Tomcat.")
+md.append("- **FastAPI Async (SQLAlchemy + Pydantic)**: overhead do ORM + GIL limita o throughput máximo. A partir de 4 CPUs o erro zera.")
 md.append("")
 
 # Ramp-up & Spike
@@ -307,11 +309,11 @@ md.append("")
 # Final observations
 md.append("### Conclusão")
 md.append("")
-md.append("1. **Go + Gin (GORM)** domina todos os cenários: maior throughput, menor latência, **zero erros em todos os testes**. A combinação de runtime compilado (Go), modelo concorrente (goroutines) e framework eficiente (Gin) com GORM entrega 2x o throughput do WebFlux com latência 50% menor — mesmo utilizando um ORM completo.")
-md.append("2. **Spring WebFlux** é a melhor stack JVM, com escalabilidade quase linear (19x de 1 para 12 CPUs em ramp-up) e 0% de erro em steady state em todas as configs. Porém, seu throughput máximo é ~50% do Go Gin.")
-md.append("3. **Spring MVC** sofre com o modelo thread-per-request: 68% de erro em 2 CPUs no steady state. Escala bem até 4 CPUs (7,1x) e então platôa — o bottleneck muda para o banco ou nginx.")
-md.append("4. **FastAPI Async (SQLAlchemy + Pydantic)** é a stack mais fraca em throughput bruto. O overhead do ORM + validação + GIL limita o máximo a ~1.600 req/s. Porém, é a única stack que zera erros em steady state a partir de 4 CPUs (ao lado de Go e WebFlux).")
-md.append("5. **A eficiência importa**: Go Gin (GORM) com **2 CPUs** (10.839 req/s) entrega mais throughput que qualquer stack concorrente com **12 CPUs**. Isso tem impacto direto em custo de infraestrutura em produção.")
+md.append("1. **Rust + Axum (sqlx)** é a stack mais rápida: maior throughput geral, menor latência p95, **zero erros em todos os testes**. Com o runtime Tokio configurado corretamente (worker_threads = CPUs disponíveis), a escalabilidade é competitiva com as melhores stacks.")
+md.append("2. **Go + Gin (GORM)** mantém a segunda posição com vantagem sobre as stacks JVM. Sua eficiência por núcleo é notável: com 2 CPUs já supera o throughput máximo de todas as stacks concorrentes exceto Rust.")
+md.append("3. **Spring WebFlux** é a melhor stack JVM, com escalabilidade consistente (19x de 1 para 12 CPUs em ramp-up) e 0% de erro em steady state em todas as configs.")
+md.append("4. **Spring MVC** sofre com o modelo thread-per-request. Escala bem até 4 CPUs e então platôa — o bottleneck muda para o banco ou nginx.")
+md.append("5. **FastAPI Async (SQLAlchemy + Pydantic)** é a stack mais fraca em throughput bruto. O overhead do ORM + validação + GIL limita o throughput máximo.")
 md.append("")
 
 out_path = os.path.join(base_dir, "escalabilidade.md")

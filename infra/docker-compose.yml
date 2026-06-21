@@ -200,6 +200,23 @@ services:
     networks:
       - benchmark-network
 
+  rust-axum:
+    profiles: ["rust-axum"]
+    build:
+      context: ../implementations/rust-axum
+      dockerfile: Dockerfile
+    container_name: benchmark-rust-axum
+    cpus: ${CPUS:-2}
+    mem_limit: ${MEM_LIMIT:-2G}
+    environment:
+      DATABASE_URL: postgres://bench:bench123@postgres:5432/benchmark?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - benchmark-network
+
 networks:
   benchmark-network:
 

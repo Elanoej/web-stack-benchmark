@@ -10,46 +10,46 @@
 
 ## Steady State (200 VUs, 30s)
 
-| Métrica | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
-|---|------|---|---|---|
-| Throughput (req/s) | 4071 | 147 | 113 | 2500 |
-| Latência média (ms) | 48.95 | 1340.29 | 1723.13 | 78.67 |
-| Latência p50 (ms) | 64.81 | 1305.85 | 696.26 | 16.47 |
-| Latência p90 (ms) | 94.19 | 3019.11 | 4501.22 | 86.67 |
-| Latência p95 (ms) | 99.41 | 3631.42 | 6996.94 | 492.89 |
-| Latência máxima (ms) | 140 | 5706 | 10296 | 5686 |
-| Total requisições | 122457 | 4590 | 3606 | 77376 |
-| Erros | 0,00% | 0,00% | 0,00% | 87.21% |
+| Métrica | Go + Gin (GORM) | Rust + Axum (sqlx) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+|---|------|---|---|---|---|
+| Throughput (req/s) | 2767 | 6954 | 147 | 113 | 2500 |
+| Latência média (ms) | 71.97 | 28.66 | 1340.29 | 1723.13 | 78.67 |
+| Latência p50 (ms) | 40.61 | 36.54 | 1305.85 | 696.26 | 16.47 |
+| Latência p90 (ms) | 193.60 | 42.64 | 3019.11 | 4501.22 | 86.67 |
+| Latência p95 (ms) | 258.55 | 45.22 | 3631.42 | 6996.94 | 492.89 |
+| Latência máxima (ms) | 1117 | 450 | 5706 | 10296 | 5686 |
+| Total requisições | 83424 | 209028 | 4590 | 3606 | 77376 |
+| Erros | 0,00% | 0,00% | 0,00% | 0,00% | 87.21% |
 
 ---
 
 ## Ramp-up (0 → 500 VUs, 80s)
 
-| Métrica | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
-|---|------|---|---|---|
-| Throughput (req/s) | 5394 | 507 | 432 | 520 |
-| Latência média (ms) | 39.91 | 431.41 | 510.49 | 424.50 |
-| Latência p50 (ms) | 14.35 | 307.21 | 388.68 | 203.90 |
-| Latência p90 (ms) | 104.90 | 1082.34 | 1192.62 | 1180.99 |
-| Latência p95 (ms) | 116.17 | 1112.80 | 1496.58 | 1481.05 |
-| Latência máxima (ms) | 198 | 1385 | 4203 | 8396 |
-| Total requisições | 431532 | 40605 | 34584 | 41586 |
-| Erros | 0.18% | 0,00% | 0,00% | 0.00% |
+| Métrica | Go + Gin (GORM) | Rust + Axum (sqlx) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+|---|------|---|---|---|---|
+| Throughput (req/s) | 3959 | 7118 | 507 | 432 | 520 |
+| Latência média (ms) | 54.50 | 30.22 | 431.41 | 510.49 | 424.50 |
+| Latência p50 (ms) | 11.43 | 15.13 | 307.21 | 388.68 | 203.90 |
+| Latência p90 (ms) | 164.55 | 79.81 | 1082.34 | 1192.62 | 1180.99 |
+| Latência p95 (ms) | 221.16 | 92.58 | 1112.80 | 1496.58 | 1481.05 |
+| Latência máxima (ms) | 1733 | 125 | 1385 | 4203 | 8396 |
+| Total requisições | 316713 | 569415 | 40605 | 34584 | 41586 |
+| Erros | 0.12% | 0.04% | 0,00% | 0,00% | 0.00% |
 
 ---
 
 ## Spike (50 → 500 → 50 VUs, 75s)
 
-| Métrica | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
-|---|------|---|---|---|
-| Throughput (req/s) | 2276 | 1135 | 752 | 454 |
-| Latência média (ms) | 26.04 | 87.37 | 150.69 | 276.09 |
-| Latência p50 (ms) | 1.73 | 1.79 | 17.50 | 79.14 |
-| Latência p90 (ms) | 92.61 | 499.79 | 510.30 | 1207.31 |
-| Latência p95 (ms) | 95.90 | 614.28 | 712.11 | 1398.12 |
-| Latência máxima (ms) | 164 | 779 | 3000 | 7190 |
-| Total requisições | 170877 | 85182 | 56448 | 34071 |
-| Erros | 0,00% | 0.20% | 0.83% | 0.22% |
+| Métrica | Go + Gin (GORM) | Rust + Axum (sqlx) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+|---|------|---|---|---|---|
+| Throughput (req/s) | 1910 | 2624 | 1135 | 752 | 454 |
+| Latência média (ms) | 37.69 | 18.10 | 87.37 | 150.69 | 276.09 |
+| Latência p50 (ms) | 1.44 | 6.01 | 1.79 | 17.50 | 79.14 |
+| Latência p90 (ms) | 115.51 | 56.05 | 499.79 | 510.30 | 1207.31 |
+| Latência p95 (ms) | 203.06 | 63.16 | 614.28 | 712.11 | 1398.12 |
+| Latência máxima (ms) | 1267 | 92 | 779 | 3000 | 7190 |
+| Total requisições | 143235 | 197025 | 85182 | 56448 | 34071 |
+| Erros | 0,00% | 0,00% | 0.20% | 0.83% | 0.22% |
 
 ---
 
@@ -57,13 +57,13 @@
 
 | Cenário | 1º | 2º | 3º | 4º |
 |---|---|---|---|---|
-| Steady State | Go + Gin (GORM) (4071 req/s) | FastAPI Async (SQLAlchemy) (2500 req/s) | Spring WebFlux (147 req/s) | Spring MVC (113 req/s) |
-| Ramp-up | Go + Gin (GORM) (5394 req/s) | FastAPI Async (SQLAlchemy) (520 req/s) | Spring WebFlux (507 req/s) | Spring MVC (432 req/s) |
-| Spike | Go + Gin (GORM) (2276 req/s) | Spring WebFlux (1135 req/s) | Spring MVC (752 req/s) | FastAPI Async (SQLAlchemy) (454 req/s) |
+| Steady State | Rust + Axum (sqlx) (6954 req/s) | Go + Gin (GORM) (2767 req/s) | FastAPI Async (SQLAlchemy) (2500 req/s) | Spring WebFlux (147 req/s) | Spring MVC (113 req/s) |
+| Ramp-up | Rust + Axum (sqlx) (7118 req/s) | Go + Gin (GORM) (3959 req/s) | FastAPI Async (SQLAlchemy) (520 req/s) | Spring WebFlux (507 req/s) | Spring MVC (432 req/s) |
+| Spike | Rust + Axum (sqlx) (2624 req/s) | Go + Gin (GORM) (1910 req/s) | Spring WebFlux (1135 req/s) | Spring MVC (752 req/s) | FastAPI Async (SQLAlchemy) (454 req/s) |
 
 ## Observações
 
-- **Go + Gin (GORM)** teve o maior throughput geral em 1cpus-1gb.
-- Em **Steady State (200 VUs, 30s)**: melhor throughput = **Go + Gin (GORM)** (4071 req/s), menor p95 = **Go + Gin (GORM)** (99.41 ms)
-- Em **Ramp-up (0 → 500 VUs, 80s)**: melhor throughput = **Go + Gin (GORM)** (5394 req/s), menor p95 = **Go + Gin (GORM)** (116.17 ms)
-- Em **Spike (50 → 500 → 50 VUs, 75s)**: melhor throughput = **Go + Gin (GORM)** (2276 req/s), menor p95 = **Go + Gin (GORM)** (95.90 ms)
+- **Rust + Axum (sqlx)** teve o maior throughput geral em 1cpus-1gb.
+- Em **Steady State (200 VUs, 30s)**: melhor throughput = **Rust + Axum (sqlx)** (6954 req/s), menor p95 = **Rust + Axum (sqlx)** (45.22 ms)
+- Em **Ramp-up (0 → 500 VUs, 80s)**: melhor throughput = **Rust + Axum (sqlx)** (7118 req/s), menor p95 = **Rust + Axum (sqlx)** (92.58 ms)
+- Em **Spike (50 → 500 → 50 VUs, 75s)**: melhor throughput = **Rust + Axum (sqlx)** (2624 req/s), menor p95 = **Rust + Axum (sqlx)** (63.16 ms)
