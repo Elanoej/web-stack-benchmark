@@ -14,20 +14,20 @@ Entender **como** e **por que** cada stack performa do jeito que performa — n�
 
 ## Stacks
 
-| # | Stack | Linguagem | Modelo |
-|---|---|---|---|
-| 1 | Spring MVC | Kotlin | Thread-per-request (bloqueante) |
-| 2 | Spring WebFlux | Kotlin | Reativo / non-blocking |
-| 3 | FastAPI + Uvicorn | Python | Async I/O (processo único) |
-| 4 | FastAPI + Gunicorn | Python | Multi-process workers |
-| 5 | Go net/http | Go | Goroutines |
+| # | Stack | Linguagem | ORM | Modelo |
+|---|---|---|---|---|---|
+| 1 | Spring MVC | Kotlin | Hibernate (JDBC) | Thread-per-request (bloqueante) |
+| 2 | Spring WebFlux | Kotlin | Hibernate (R2DBC) | Reativo / non-blocking |
+| 3 | FastAPI + Uvicorn | Python | SQLAlchemy (asyncpg) | Async I/O |
+| 4 | Go + Gin | Go | GORM | Goroutines |
+| 5 | Rust + Axum | Rust | sqlx (tokio-postgres) | Async I/O (Tokio) |
 
 ---
 
 ## Endpoints (idênticos em todas as stacks)
 
 ```
-GET  /hello          → sem I/O — mede o overhead puro do framework
+GET  /users/hello    → sem I/O — mede o overhead puro do framework
 GET  /users          → SELECT com paginação — I/O leve
 POST /users/search   → query com filtros — I/O real com lógica
 ```
@@ -36,11 +36,9 @@ POST /users/search   → query com filtros — I/O real com lógica
 
 ## Métricas
 
-- **Throughput** — requisições por segundo (RPS)
-- **Latência** — p50, p95, p99
-- **Memória** — RSS sob carga
-- **Concorrência** — comportamento com 10, 100 e 500 conexões simultâneas
-- **Taxa de erro** — drops e timeouts sob stress
+- **Throughput** — requisições por segundo (req/s)
+- **Latência** — p50, p90, p95
+- **Taxa de erro** — requisições com falha sob stress
 
 ---
 
@@ -48,11 +46,9 @@ POST /users/search   → query com filtros — I/O real com lógica
 
 | Ferramenta | Propósito |
 |---|---|
-| `wrk` | RPS máximo — throughput bruto com overhead mínimo |
-| `k6` | Cenários realistas — ramp-up, picos, thresholds |
-| `autocannon` | Smoke tests rápidos para CI |
+| `k6` | 3 cenários: Steady State (200 VUs, 30s), Ramp-up (0→500 VUs, 80s), Spike (50→500→50 VUs, 75s) |
 
-Todos os scripts são parametrizados por porta, então o mesmo teste roda em qualquer backend sem modificação.
+Todos os cenários acessam as 3 rotas por iteração (`/users/hello`, `/users`, `/users/search`) contra `localhost:8080` (nginx).
 
 ---
 
@@ -60,7 +56,7 @@ Todos os scripts são parametrizados por porta, então o mesmo teste roda em qua
 
 ```
 ┌─────────┐     ┌───────┐     ┌─────────────────┐     ┌──────────┐
-│ wrk/k6  │────▶│ Nginx │────▶│  Backend (n)     │────▶│ Postgres │
+│ k6      │────▶│ Nginx │────▶│  Backend (n)     │────▶│ Postgres │
 └─────────┘     └───────┘     └─────────────────┘     └──────────┘
 ```
 
@@ -68,20 +64,15 @@ O Nginx (porta `8080`) fica na frente como reverse proxy e roteia para o backend
 
 ---
 
-## Fluxo de Requisição — FastAPI com Gunicorn
+## Fluxo de Requisição
 
 ```mermaid
 sequenceDiagram
-    Client->>Nginx: HTTP Request
-    Nginx->>Gunicorn: Proxy pass
-    Gunicorn->>UvicornWorker: Spawn ASGI worker
-    UvicornWorker->>FastAPI: ASGI call
-    FastAPI->>Handler: Route match
-    Handler->>PostgreSQL: Query
-    PostgreSQL-->>Handler: Result
-    Handler-->>FastAPI: Response
-    FastAPI-->>UvicornWorker: ASGI response
-    UvicornWorker-->>Nginx: HTTP Response
+    Client->>Nginx: HTTP Request (localhost:8080)
+    Nginx->>Backend: Proxy pass (container interno)
+    Backend->>PostgreSQL: Query (async ou blocking)
+    PostgreSQL-->>Backend: Result
+    Backend-->>Nginx: HTTP Response
     Nginx-->>Client: HTTP Response
 ```
 
@@ -115,43 +106,33 @@ flowchart LR
 ```
 web-stack-benchmark/
 ├── infra/
-│   ├── docker-compose.yml       # stack completa — perfis de backend + postgres + nginx
+│   ├── docker-compose.yml        # perfis: postgres + nginx + backend escolhido
 │   ├── nginx/
-│   │   └── nginx.conf.template  # reverse proxy config (envsubst)
+│   │   ├── nginx.conf            # reverse proxy config
+│   │   └── nginx.conf.template   # template com envsubst (BACKEND_HOST)
 │   └── postgres/
-│       ├── schema.sql
-│       └── seed.sql
+│       ├── schema.sql            # tabelas + índices
+│       └── seed.sql              # 10.000 usuários (9.000 ativos)
 ├── load-tests/
 │   ├── k6/
+│   │   ├── config.js             # BASE_URL + thresholds globais
 │   │   ├── scenarios/
-│   │   │   ├── ramp-up.js
-│   │   │   ├── spike.js
-│   │   │   └── steady.js
-│   │   └── thresholds.js
-│   ├── wrk/
-│   │   └── scripts/
-│   ├── autocannon/
-│   │   └── smoke.js
-│   └── results/
-│       ├── raw/
-│       └── reports/
+│   │   │   ├── steady.js         # 200 VUs, 30s, sem sleep
+│   │   │   ├── ramp-up.js        # 0→500 VUs em estágios, 80s
+│   │   │   └── spike.js          # 50→500→50 VUs, 75s
+│   │   └── generate-all-reports.py  # gera todos os .md automáticos
 ├── implementations/
-│   ├── spring-mvc-kotlin/
-│   ├── spring-webflux-kotlin/
-│   ├── fastapi-async/
-│   ├── fastapi-gunicorn/
-│   └── go-stdlib/
+│   ├── spring-mvc-kotlin/        # Kotlin + Hibernate (JDBC)
+│   ├── spring-webflux-kotlin/    # Kotlin + Hibernate (R2DBC)
+│   ├── fastapi-async/            # Python + SQLAlchemy (asyncpg)
+│   ├── go-gin/                   # Go + Gin + GORM
+│   └── rust-axum/                # Rust + Axum + sqlx
 └── docs/
-    ├── metodologia.md
-    ├── resultados.md
-    ├── arquitetura/
-    │   ├── spring-mvc.md
-    │   ├── spring-webflux.md
-    │   └── fastapi.md
-    └── conceitos/
-        ├── threads-vs-async.md
-        ├── event-loop.md
-        └── gil-python.md
+    ├── resultados.md             # relatório consolidado (manual)
+    └── results/
+        ├── escalabilidade.md     # curva de escalabilidade (automático)
+        └── {config}/
+            └── {stack}/          # JSONs + .md por config
 ```
 
 ---
@@ -160,15 +141,17 @@ web-stack-benchmark/
 
 ```bash
 # Subir infra + backend específico (do diretório infra/)
-BACKEND_HOST=spring-mvc     docker compose --profile spring-mvc up
-BACKEND_HOST=spring-webflux docker compose --profile spring-webflux up
-
-# Ou de qualquer lugar (especificando o arquivo)
-BACKEND_HOST=spring-mvc docker compose -f infra/docker-compose.yml --profile spring-mvc up
+BACKEND_HOST=go-gin     docker compose --profile go-gin up
+BACKEND_HOST=rust-axum  docker compose --profile rust-axum up
+BACKEND_HOST=spring-mvc docker compose --profile spring-mvc up
 
 # Rodar testes de carga (com o backend rodando em 8080)
-k6 run -e PORT=8080 load-tests/k6/scenarios/steady.js
-wrk -t4 -c100 -d30s http://localhost:8080/users
+k6 run load-tests/k6/scenarios/steady.js
+k6 run load-tests/k6/scenarios/ramp-up.js
+k6 run load-tests/k6/scenarios/spike.js
+
+# Gerar relatórios
+python3 load-tests/k6/generate-all-reports.py
 
 # Resetar banco de dados
 docker compose --profile <perfil> down -v
@@ -178,16 +161,14 @@ docker compose --profile <perfil> down -v
 
 ## Resultados
 
-> Os resultados serão publicados em [`docs/resultados.md`](docs/resultados.md) conforme cada implementação for concluída.
+> Relatório completo: [`docs/resultados.md`](docs/resultados.md). Relatórios automáticos por config: [`docs/results/escalabilidade.md`](docs/results/escalabilidade.md).
 
 ---
 
 ## Documentação
 
-- [Metodologia](docs/metodologia.md) — como os testes foram conduzidos e o que foi controlado
-- [Threads vs Async](docs/conceitos/threads-vs-async.md)
-- [GIL do Python e por que o Gunicorn às vezes vence](docs/conceitos/gil-python.md)
-- [Event Loop explicado](docs/conceitos/event-loop.md)
+- [Resultados](docs/resultados.md) — relatório consolidado com análise
+- [Escalabilidade](docs/results/escalabilidade.md) — dados brutos e curva por config
 
 ---
 
@@ -195,11 +176,11 @@ docker compose --profile <perfil> down -v
 
 | Stack | Código | Docker | Testado |
 |---|---|---|---|---|
-| Spring MVC (Kotlin) | ✅ | ✅ | ⬜ |
-| Spring WebFlux (Kotlin) | ✅ | ✅ | ⬜ |
-| FastAPI async | ⬜ | ⬜ | ⬜ |
-| FastAPI + Gunicorn | ⬜ | ⬜ | ⬜ |
-| Go net/http | ⬜ | ⬜ | ⬜ |
+| Go + Gin (GORM) | ✅ | ✅ | ✅ |
+| Rust + Axum (sqlx) | ✅ | ✅ | ✅ |
+| Spring WebFlux (R2DBC) | ✅ | ✅ | ✅ |
+| Spring MVC (JDBC) | ✅ | ✅ | ✅ |
+| FastAPI Async (SQLAlchemy) | ✅ | ✅ | ✅ |
 
 ---
 
