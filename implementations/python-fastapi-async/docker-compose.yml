@@ -1,0 +1,11 @@
+services:
+  fastapi-async:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: benchmark-fastapi-async
+    network_mode: "host"
+    cpus: ${CPUS:-2}
+    mem_limit: ${MEM_LIMIT:-2G}
+    environment:
+      DATABASE_URL: postgresql+asyncpg://bench:bench123@localhost:5432/benchmark

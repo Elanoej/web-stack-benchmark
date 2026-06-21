@@ -32,7 +32,7 @@ export const options = {
 }
 
 export default function () {
-    const hello = http.get(`${BASE_URL}/users/hello`)
+    const hello = http.get(`${BASE_URL}/hello`)
     check(hello, { "hello: status 200": (r) => r.status === 200 })
 
     const users = http.get(`${BASE_URL}/users?page=0&size=20`)

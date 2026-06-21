@@ -14,7 +14,7 @@ upstream benchmark_backend {
     keepalive 64;
     keepalive_requests 100;
     keepalive_timeout 60s;
-    server ${BACKEND_HOST}:${BACKEND_PORT};
+    server localhost:5000;
 }
 
 server {

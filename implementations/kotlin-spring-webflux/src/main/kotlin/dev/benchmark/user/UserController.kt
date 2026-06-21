@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping
 class UserController(
     private val userRepository: UserRepository,
 ) {
@@ -17,7 +17,7 @@ class UserController(
     @GetMapping("/hello")
     suspend fun hello() = mapOf("message" to "ok", "stack" to "spring-webflux-kotlin")
 
-    @GetMapping
+    @GetMapping("/users")
     suspend fun findAll(
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "20") size: Int,
@@ -26,7 +26,7 @@ class UserController(
         return this.userRepository.search(null, null, limit = size, offset = offset).toList()
     }
 
-    @PostMapping("/search")
+    @PostMapping("/users/search")
     suspend fun search(
         @RequestBody body: SearchRequest,
         @RequestParam("page", defaultValue = "0") page: Int,

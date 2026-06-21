@@ -55,7 +55,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/users/hello", func(c *gin.Context) {
+	r.GET("/hello", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "ok", "stack": "go-gin"})
 	})
 

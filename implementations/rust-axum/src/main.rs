@@ -74,7 +74,7 @@ async fn main() {
     };
 
     let app = Router::new()
-        .route("/users/hello", get(hello))
+        .route("/hello", get(hello))
         .route("/users", get(list_users))
         .route("/users/search", post(search_users))
         .with_state(state);

@@ -1,0 +1,14 @@
+services:
+  spring-webflux:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: benchmark-spring-webflux
+    network_mode: "host"
+    cpus: ${CPUS:-2}
+    mem_limit: ${MEM_LIMIT:-2G}
+    environment:
+      SPRING_R2DBC_URL:      r2dbc:postgresql://localhost:5432/benchmark
+      SPRING_R2DBC_USERNAME: bench
+      SPRING_R2DBC_PASSWORD: bench123
+      SERVER_PORT: "5000"

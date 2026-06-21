@@ -1,46 +1,16 @@
-# =============================================================
-# docker-compose.yml — web-stack-benchmark
-# =============================================================
-#
-# CONCEITO: Docker Compose Profiles
-#
-# Profiles permitem subir apenas parte dos serviços.
-# Serviços SEM profile sobem sempre (postgres, nginx).
-# Serviços COM profile só sobem quando você pede.
-#
-# O BACKEND_HOST é configurável via variável de ambiente
-# para o nginx saber para onde rotear as requisições.
-#
-# Uso:
-#   # Só a infra base (postgres + nginx — sem backend)
-#   docker compose up
-#
-#   # Infra + backend específico
-#   BACKEND_HOST=spring-mvc     docker compose --profile spring-mvc up
-#   BACKEND_HOST=spring-webflux docker compose --profile spring-webflux up
-#
-#   # Resetar banco
-#   docker compose --profile <perfil> down -v
-#
-# Ordem de inicialização:
-#   1. postgres   (sem profile — sobe sempre)
-#   2. nginx      (sem profile — sobe sempre)
-#   3. backend    (só o do profile escolhido)
-# =============================================================
-
+# Infraestrutura base: postgres + nginx + pgadmin
+# Uso: docker compose -f infra/docker-compose.yml --env-file ../.env up -d
+# pgAdmin em http://localhost:5050 (admin@example.com / admin)
 services:
 
-  # ─── Banco de dados ──────────────────────────────────────────
-  # Sem profile = sobe com qualquer comando "docker compose up"
   postgres:
     image: postgres:16-alpine
     container_name: benchmark-postgres
+    network_mode: "host"
     environment:
       POSTGRES_DB:       benchmark
       POSTGRES_USER:     bench
       POSTGRES_PASSWORD: bench123
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
@@ -50,179 +20,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    networks:
-      - benchmark-network
 
-  # ─── Nginx (reverse proxy) ────────────────────────────────────
-  # Sem profile. Sobe sempre, mas só roteia para o backend
-  # que você especificar via BACKEND_HOST. Se o backend não
-  # subiu, retorna 502 — sem problema.
-  #
-  #   BACKEND_HOST=spring-mvc docker compose --profile spring-mvc up
-  #
   nginx:
     image: nginx:alpine
     container_name: benchmark-nginx
-
-    ports:
-      - "8080:8080"
-
-    environment:
-      BACKEND_HOST: ${BACKEND_HOST:-spring-webflux}
-      BACKEND_PORT: ${BACKEND_PORT:-8080}
-
+    network_mode: "host"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
 
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
-
-  # ─── Backend 1: Spring MVC (Kotlin) ──────────────────────────
-  # profiles: ["spring-mvc"] significa que este serviço SÓ sobe
-  # quando você rodar: docker compose --profile spring-mvc up
-  spring-mvc:
-    profiles: ["spring-mvc"]
-    build:
-      context: ../implementations/spring-mvc-kotlin
-      dockerfile: Dockerfile
-    container_name: benchmark-spring-mvc
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: benchmark-pgadmin
+    network_mode: "host"
     environment:
-      SPRING_DATASOURCE_URL:      jdbc:postgresql://postgres:5432/benchmark
-      SPRING_DATASOURCE_USERNAME: bench
-      SPRING_DATASOURCE_PASSWORD: bench123
-      # JDBC — driver bloqueante. Cada query ocupa uma thread
-      # até a resposta chegar. Modelo clássico do Spring MVC.
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5050
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
 
-  # ─── Backend 2: Spring WebFlux (Kotlin) ──────────────────────
-  spring-webflux:
-    profiles: ["spring-webflux"]
-    build:
-      context: ../implementations/spring-webflux-kotlin
-      dockerfile: Dockerfile
-    container_name: benchmark-spring-webflux
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      SPRING_R2DBC_URL:      r2dbc:postgresql://postgres:5432/benchmark
-      SPRING_R2DBC_USERNAME: bench
-      SPRING_R2DBC_PASSWORD: bench123
-      # R2DBC — driver reativo/non-blocking. A thread não fica
-      # presa esperando o banco. Necessário para WebFlux fazer sentido.
-      # Usar JDBC com WebFlux seria como colocar motor elétrico
-      # num carro e ainda assim encher o tanque de gasolina.
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
-
-  # ─── Backend 3: FastAPI async (Uvicorn) ──────────────────────
-  fastapi-async:
-    profiles: ["fastapi-async"]
-    build:
-      context: ../implementations/fastapi-async
-      dockerfile: Dockerfile
-    container_name: benchmark-fastapi-async
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      DATABASE_URL: postgresql+asyncpg://bench:bench123@postgres:5432/benchmark
-      WORKERS: "3"
-      # asyncpg — driver async para Postgres em Python.
-      # Roda dentro do event loop do asyncio, sem bloquear.
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
-
-  # ─── Backend 4: FastAPI + Gunicorn ───────────────────────────
-  fastapi-gunicorn:
-    profiles: ["fastapi-gunicorn"]
-    build:
-      context: ../implementations/fastapi-gunicorn
-      dockerfile: Dockerfile
-    container_name: benchmark-fastapi-gunicorn
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      DATABASE_URL: postgresql+asyncpg://bench:bench123@postgres:5432/benchmark
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-
-  # ─── Backend 5: Go net/http ───────────────────────────────────
-  go-stdlib:
-    profiles: ["go-stdlib"]
-    build:
-      context: ../implementations/go-stdlib
-      dockerfile: Dockerfile
-    container_name: benchmark-go-stdlib
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      DATABASE_URL: postgres://bench:bench123@postgres:5432/benchmark?sslmode=disable
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-
-  go-gin:
-    profiles: ["go-gin"]
-    build:
-      context: ../implementations/go-gin
-      dockerfile: Dockerfile
-    container_name: benchmark-go-gin
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      DATABASE_URL: postgres://bench:bench123@postgres:5432/benchmark?sslmode=disable
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
-
-  rust-axum:
-    profiles: ["rust-axum"]
-    build:
-      context: ../implementations/rust-axum
-      dockerfile: Dockerfile
-    container_name: benchmark-rust-axum
-    cpus: ${CPUS:-2}
-    mem_limit: ${MEM_LIMIT:-2G}
-    environment:
-      DATABASE_URL: postgres://bench:bench123@postgres:5432/benchmark?sslmode=disable
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - benchmark-network
-
-networks:
-  benchmark-network:
-
-# ─── Volumes ──────────────────────────────────────────────────
 volumes:
   postgres_data:
-    # Para resetar o banco e re-rodar o seed:
-    # docker compose down -v
-    # docker compose up
+  pgadmin_data:
