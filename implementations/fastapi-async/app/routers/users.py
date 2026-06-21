@@ -9,7 +9,7 @@ from app.schemas import HelloResponse, SearchRequest, UserResponse
 router = APIRouter(tags=["users"])
 
 
-@router.get("/users/hello")
+@router.get("/hello")
 async def hello() -> HelloResponse:
     return HelloResponse(message="ok", stack="fastapi-async")
 

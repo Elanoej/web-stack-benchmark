@@ -140,21 +140,29 @@ web-stack-benchmark/
 ## Como Rodar
 
 ```bash
-# Subir infra + backend específico (do diretório infra/)
-BACKEND_HOST=go-gin     docker compose --profile go-gin up
-BACKEND_HOST=rust-axum  docker compose --profile rust-axum up
-BACKEND_HOST=spring-mvc docker compose --profile spring-mvc up
+# 1. Editar .env com a config desejada
+#    CPUS=1 / MEM_LIMIT=1G (padrão) ou 2/2G, 4/4G, 8/8G, 12/12G
 
-# Rodar testes de carga (com o backend rodando em 8080)
+# 2. Subir infra base (postgres + nginx) — uma vez
+docker compose -f infra/docker-compose.yml --env-file .env up -d
+
+# 3. Subir o backend escolhido
+docker compose -f implementations/rust-axum/docker-compose.yml --env-file .env up -d --build
+
+# 4. Rodar testes de carga
 k6 run load-tests/k6/scenarios/steady.js
 k6 run load-tests/k6/scenarios/ramp-up.js
 k6 run load-tests/k6/scenarios/spike.js
 
-# Gerar relatórios
+# 5. Derrubar backend e trocar para outro
+docker compose -f implementations/rust-axum/docker-compose.yml down
+docker compose -f implementations/go-gin/docker-compose.yml --env-file .env up -d --build
+
+# 6. Gerar relatórios
 python3 load-tests/k6/generate-all-reports.py
 
-# Resetar banco de dados
-docker compose --profile <perfil> down -v
+# 7. Resetar tudo (inclusive banco)
+docker compose -f infra/docker-compose.yml --env-file .env down -v
 ```
 
 ---
