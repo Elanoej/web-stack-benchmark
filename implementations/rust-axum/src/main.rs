@@ -10,7 +10,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::{PgPool, QueryBuilder, postgres::{PgConnectOptions, PgPoolOptions}};
-use std::{env, str::FromStr, sync::Arc, thread};
+use std::{env, str::FromStr, sync::Arc};
 use uuid::Uuid;
  
 
@@ -51,57 +51,44 @@ pub struct AppState {
 
 
 // Entry point
-fn main() {
-    let available = thread::available_parallelism()
-        .map(|n| n.get())
-        .unwrap_or(1);
+#[tokio::main]
+async fn main() {
+    let database_url = env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable".to_string());
 
-    println!("CPUs disponíveis: {}", available);
+    let port = env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string());
 
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(available)
-        .enable_all()
-        .build()
-        .expect("Falha ao criar Tokio runtime");
+    let connect_options = PgConnectOptions::from_str(&database_url)
+        .expect("URL inválida")
+        .statement_cache_capacity(100);
 
-    runtime.block_on(async {
-        let database_url = env::var("DATABASE_URL")
-            .unwrap_or_else(|_| "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable".to_string());
+    let pool = PgPoolOptions::new()
+        .max_connections(100)
+        .connect_with(connect_options)
+        .await
+        .expect("Falha ao conectar no PostgreSQL");
 
-        let port = env::var("PORT")
-            .unwrap_or_else(|_| "8080".to_string());
+    let state = AppState {
+        db: Arc::new(pool),
+    };
 
-        let connect_options = PgConnectOptions::from_str(&database_url)
-            .expect("URL inválida")
-            .statement_cache_capacity(100);
+    let app = Router::new()
+        .route("/users/hello", get(hello))
+        .route("/users", get(list_users))
+        .route("/users/search", post(search_users))
+        .with_state(state);
 
-        let pool = PgPoolOptions::new()
-            .max_connections(100)
-            .connect_with(connect_options)
-            .await
-            .expect("Falha ao conectar no PostgreSQL");
+    let addr = format!("0.0.0.0:{}", port);
+    println!("Servidor rodando em {}", addr);
 
-        let state = AppState {
-            db: Arc::new(pool),
-        };
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .expect("Falha ao abrir a porta");
 
-        let app = Router::new()
-            .route("/users/hello", get(hello))
-            .route("/users", get(list_users))
-            .route("/users/search", post(search_users))
-            .with_state(state);
-
-        let addr = format!("0.0.0.0:{}", port);
-        println!("Servidor rodando em {}", addr);
-
-        let listener = tokio::net::TcpListener::bind(&addr)
-            .await
-            .expect("Falha ao abrir a porta");
-
-        axum::serve(listener, app)
-            .await
-            .expect("Falha ao iniciar o servidor");
-    })
+    axum::serve(listener, app)
+        .await
+        .expect("Falha ao iniciar o servidor");
 }
 
 // =============================================================
