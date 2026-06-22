@@ -6,7 +6,7 @@
 ## Throughput (req/s)
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 3959 | 8038 | 10118 | 10921 | 10958 |
 | Rust + Axum (sqlx) | 7032 | 11860 | 14421 | 14762 | 14578 |
 | Spring WebFlux | 507 | 2094 | 4746 | 7629 | 9641 |
@@ -18,7 +18,7 @@
 **Steady State:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 2767 | 8234 | 12926 | 11281 | 11137 |
 | Rust + Axum (sqlx) | 4102 | 12228 | 14906 | 15332 | 15076 |
 | Spring WebFlux | 147 | 669 | 1932 | 4235 | 6507 |
@@ -28,7 +28,7 @@
 **Ramp-up:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 3959 | 8038 | 10118 | 10921 | 10958 |
 | Rust + Axum (sqlx) | 7032 | 11860 | 14421 | 14762 | 14578 |
 | Spring WebFlux | 507 | 2094 | 4746 | 7629 | 9641 |
@@ -38,7 +38,7 @@
 **Spike:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 1910 | 2771 | 3331 | 3390 | 3379 |
 | Rust + Axum (sqlx) | 2645 | 3570 | 3759 | 3778 | 3777 |
 | Spring WebFlux | 1135 | 1631 | 2137 | 2792 | 3171 |
@@ -48,7 +48,7 @@
 ## Latência p95 (ms)
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 221.16 | 113.61 | 49.57 | 44.44 | 43.28 |
 | Rust + Axum (sqlx) | 94.05 | 55.46 | 33.08 | 32.21 | 32.18 |
 | Spring WebFlux | 1112.80 | 267.44 | 141.47 | 87.67 | 67.99 |
@@ -60,7 +60,7 @@
 **Steady State:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Rust + Axum (sqlx) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
@@ -70,7 +70,7 @@
 **Ramp-up:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 0.12% | 0.15% | 0.00% | 0.00% | 0.00% |
 | Rust + Axum (sqlx) | 0.09% | 0.31% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.00% | 0.00% | 0.01% | 0.12% | 0.23% |
@@ -80,7 +80,7 @@
 **Spike:**
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Rust + Axum (sqlx) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.20% | 0.00% | 0.00% | 0.00% | 0.00% |
@@ -112,7 +112,7 @@ O cenário Steady State (200 VUs constantes sem sleep) é o mais agressivo. Ele 
 ### Taxa de erro em Steady State
 
 | Stack | 1 CPU / 1GB | 2 CPUs / 2GB | 4 CPUs / 4GB | 8 CPUs / 8GB | 12 CPUs / 12GB |
-|------|---|---|---|---|
+|------|---|---|---|---|---|
 | Go + Gin (GORM) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Rust + Axum (sqlx) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
