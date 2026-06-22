@@ -29,8 +29,8 @@ def get_cpu_count():
 def main():
     cpus = get_cpu_count()
     workers = cpus * 2 + 1
-    os.execvp("uv", [
-        "uv", "run", "uvicorn", "app.main:app",
+    os.execvp("python", [
+        "python", "-m", "uvicorn", "app.main:app",
         "--host", "0.0.0.0", "--port", "5000",
         "--workers", str(workers),
     ])

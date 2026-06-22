@@ -15,7 +15,7 @@ Entender **como** e **por que** cada stack performa do jeito que performa — n�
 ## Stacks
 
 | # | Stack | Linguagem | ORM | Modelo |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | 1 | Spring MVC | Kotlin | Hibernate (JDBC) | Thread-per-request (bloqueante) |
 | 2 | Spring WebFlux | Kotlin | Hibernate (R2DBC) | Reativo / non-blocking |
 | 3 | FastAPI + Uvicorn | Python | SQLAlchemy (asyncpg) | Async I/O |
@@ -183,7 +183,7 @@ docker compose -f infra/docker-compose.yml --env-file .env down -v
 ## Status
 
 | Stack | Código | Docker | Testado |
-|---|---|---|---|---|
+|---|---|---|---|
 | Go + Gin (GORM) | ✅ | ✅ | ✅ |
 | Rust + Axum (sqlx) | ✅ | ✅ | ✅ |
 | Spring WebFlux (R2DBC) | ✅ | ✅ | ✅ |
