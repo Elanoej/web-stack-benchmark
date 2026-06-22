@@ -10,8 +10,8 @@ interface UserRepository: CoroutineCrudRepository<User, UUID> {
     @Query("""
         SELECT * FROM users
         WHERE active = true
-        AND (:name IS NULL OR LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')))
-        AND (:city IS NULL OR LOWER(city) LIKE LOWER(CONCAT('%', :city, '%')))
+        AND (:name IS NULL OR name ILIKE CONCAT('%', :name, '%'))
+        AND (:city IS NULL OR city ILIKE CONCAT('%', :city, '%'))
         LIMIT :limit OFFSET :offset
     """)
     fun search(
