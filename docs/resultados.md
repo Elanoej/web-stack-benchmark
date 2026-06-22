@@ -29,7 +29,7 @@
 | 2 | Node Fastify (cluster mode) | 14.198 req/s | 13ms | 33ms | 79ms | 0,02% | 4,6x |
 | 3 | Go + Gin (GORM) | 10.958 req/s | 17,5ms | 43,3ms | 98ms | 0,00% | 2,8x |
 | 4 | Spring WebFlux | 11.027 req/s | 12,5ms | 57,9ms | 97ms | 0,23% | 19,0x |
-| 5 | Spring MVC | 3.046 req/s | 57,8ms | 185,0ms | 524ms | 0,00% | 7,0x |
+| 5 | Spring MVC | 8.061 req/s | 17,3ms | 87,5ms | 420ms | 0,13% | 20,2x |
 | 6 | FastAPI Async (SQLAlchemy) | 1.584 req/s | 67,1ms | 503,5ms | 3.203ms | 0,00% | 3,0x |
 
 ---
@@ -42,40 +42,40 @@
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **4.102/s** | 3.296/s | 2.767/s | 175/s | 113/s | 2.500/s |
-| p95 | **85ms** | 101ms | 259ms | 3.207ms | 6.997ms | 493ms |
+| Throughput | **4.102/s** | 3.296/s | 2.767/s | 175/s | 144/s | 2.500/s |
+| p95 | **85ms** | 101ms | 259ms | 3.207ms | 5.300ms | 493ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **87%** |
 
 ### 2 CPUs / 2GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **12.228/s** | 6.004/s | 8.234/s | 732/s | 896/s | 1.798/s |
-| p95 | **26ms** | 63ms | 83ms | 790ms | 1.206ms | 489ms |
+| Throughput | **12.228/s** | 6.004/s | 8.234/s | 732/s | 266/s | 1.798/s |
+| p95 | **26ms** | 63ms | 83ms | 790ms | 2.469ms | 489ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **68%** | **57%** |
 
 ### 4 CPUs / 4GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **14.906/s** | 10.302/s | 12.926/s | 3.040/s | 1.421/s | 2.478/s |
-| p95 | **15ms** | 41ms | 36ms | 187ms | 432ms | 451ms |
+| Throughput | **14.906/s** | 10.302/s | 12.926/s | 3.040/s | 1.162/s | 2.478/s |
+| p95 | **15ms** | 41ms | 36ms | 187ms | 584ms | 451ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **53%** |
 
 ### 8 CPUs / 8GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **15.332/s** | 13.577/s | 11.281/s | 6.112/s | 2.464/s | 2.287/s |
-| p95 | **15ms** | 21ms | 23ms | 87ms | 219ms | 324ms |
+| Throughput | **15.332/s** | 13.577/s | 11.281/s | 6.112/s | 4.412/s | 2.287/s |
+| p95 | **15ms** | 21ms | 23ms | 87ms | 158ms | 324ms |
 | Erros | **0%** | 0.79% | **0%** | **0%** | **0%** | **43%** |
 
 ### 12 CPUs / 12GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **15.076/s** | 13.610/s | 11.137/s | 8.020/s | 2.580/s | 1.529/s |
-| p95 | **15ms** | 18ms | 21ms | 64ms | 218ms | 327ms |
+| Throughput | **15.076/s** | 13.610/s | 11.137/s | 8.020/s | 6.284/s | 1.529/s |
+| p95 | **15ms** | 18ms | 21ms | 64ms | 110ms | 327ms |
 | Erros | **0%** | 0.28% | **0%** | **0%** | **0%** | **0%** |
 
 > **Análise:** Apenas **Rust + Axum**, **Go + Gin** e **Spring WebFlux** mantiveram **0% de erro em todas as configs** no cenário mais agressivo. Rust lidera em throughput com a menor latência p95.
@@ -88,11 +88,11 @@
 
 | CPU | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| 1 | **7.032/s** (94ms p95) | 3.112/s (100ms) | 3.959/s (221ms) | 579/s (1.087ms) | 432/s (1.497ms) | 520/s (1.481ms) |
-| 2 | **11.860/s** (55ms p95) | 5.996/s (88ms) | 8.038/s (114ms) | 2.411/s (257ms) | 1.185/s (510ms) | 1.055/s (720ms) |
-| 4 | **14.421/s** (33ms p95) | 10.805/s (53ms) | 10.118/s (50ms) | 4.919/s (133ms) | 3.047/s (187ms) | 1.606/s (463ms) |
-| 8 | **14.762/s** (32ms p95) | 14.245/s (33ms) | 10.921/s (44ms) | 8.638/s (76ms) | 3.062/s (190ms) | 1.626/s (455ms) |
-| 12 | **14.578/s** (32ms p95) | 14.198/s (33ms) | 10.958/s (43ms) | 11.027/s (58ms) | 3.046/s (185ms) | 1.584/s (503ms) |
+| 1 | **7.032/s** (94ms p95) | 3.112/s (100ms) | 3.959/s (221ms) | 579/s (1.087ms) | 400/s (1.796ms) | 520/s (1.481ms) |
+| 2 | **11.860/s** (55ms p95) | 5.996/s (88ms) | 8.038/s (114ms) | 2.411/s (257ms) | 1.021/s (699ms) | 1.055/s (720ms) |
+| 4 | **14.421/s** (33ms p95) | 10.805/s (53ms) | 10.118/s (50ms) | 4.919/s (133ms) | 5.729/s (107ms) | 1.606/s (463ms) |
+| 8 | **14.762/s** (32ms p95) | 14.245/s (33ms) | 10.921/s (44ms) | 8.638/s (76ms) | 7.889/s (89ms) | 1.626/s (455ms) |
+| 12 | **14.578/s** (32ms p95) | 14.198/s (33ms) | 10.958/s (43ms) | 11.027/s (58ms) | 8.061/s (88ms) | 1.584/s (503ms) |
 
 > **Análise:** Rust Axum lidera em todas as configs. Go Gin com **2 CPUs já entrega 8.038 req/s** — mais que WebFlux com 12 CPUs (11.027/s — 37% maior que Go com 2 CPUs). WebFlux escala 19x de 1 a 12 CPUs (a maior escalabilidade).
 
@@ -104,11 +104,11 @@
 
 | CPU | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| 1 | **2.645/s** (63ms p95, **0% err**) | 1.679/s (72ms, **0% err**) | 1.910/s (203ms, **0% err**) | 1.130/s (601ms, 0,01% err) | 752/s (712ms, 0,83% err) | 454/s (1.398ms, 0,22% err) |
-| 2 | **3.570/s** (15ms p95, **0% err**) | 2.307/s (69ms, **0% err**) | 2.771/s (71ms, **0% err**) | 1.653/s (227ms, 0% err) | 1.659/s (201ms, 0% err) | 938/s (657ms, 0,03% err) |
-| 4 | **3.759/s** (8ms p95, **0% err**) | 3.217/s (27ms, **0% err**) | 3.331/s (25ms, **0% err**) | 2.186/s (104ms, 0% err) | 1.644/s (168ms, 0% err) | 1.224/s (414ms, 0% err) |
-| 8 | **3.778/s** (7ms p95, **0% err**) | 3.730/s (9ms, **0% err**) | 3.390/s (16ms, **0% err**) | 2.993/s (38ms, 0% err) | 1.643/s (168ms, 0% err) | 1.237/s (410ms, 0% err) |
-| 12 | **3.777/s** (7ms p95, **0% err**) | 3.766/s (7ms, **0% err**) | 3.379/s (17ms, **0% err**) | 3.387/s (20ms, 0% err) | 1.644/s (166ms, 0% err) | 1.211/s (420ms, 0% err) |
+| 1 | **2.645/s** (63ms p95, **0% err**) | 1.679/s (72ms, **0% err**) | 1.910/s (203ms, **0% err**) | 1.130/s (601ms, 0,01% err) | 661/s (893ms, 0,76% err) | 454/s (1.398ms, 0,22% err) |
+| 2 | **3.570/s** (15ms p95, **0% err**) | 2.307/s (69ms, **0% err**) | 2.771/s (71ms, **0% err**) | 1.653/s (227ms, 0% err) | 1.802/s (192ms, 0% err) | 938/s (657ms, 0,03% err) |
+| 4 | **3.759/s** (8ms p95, **0% err**) | 3.217/s (27ms, **0% err**) | 3.331/s (25ms, **0% err**) | 2.186/s (104ms, 0% err) | 2.655/s (82ms, 0% err) | 1.224/s (414ms, 0% err) |
+| 8 | **3.778/s** (7ms p95, **0% err**) | 3.730/s (9ms, **0% err**) | 3.390/s (16ms, **0% err**) | 2.993/s (38ms, 0% err) | 2.838/s (70ms, 0% err) | 1.237/s (410ms, 0% err) |
+| 12 | **3.777/s** (7ms p95, **0% err**) | 3.766/s (7ms, **0% err**) | 3.379/s (17ms, **0% err**) | 3.387/s (20ms, 0% err) | 2.850/s (69ms, 0% err) | 1.211/s (420ms, 0% err) |
 
 > **Análise:** **Rust + Axum, Go + Gin e Spring WebFlux** têm 0% de erro em todas as configs no spike. Rust lidera com a menor latência p95 (7ms em 12 CPUs) — **4x menor que WebFlux** (28ms) e **24x menor que MVC** (166ms).
 
@@ -138,7 +138,7 @@ Throughput (req/s) em Ramp-up
 | Node Fastify | 3.112 | 5.996 | 10.805 | 14.245 | 14.198 | **4,6x** |
 | Go + Gin (GORM) | 3.959 | 8.038 | 10.118 | 10.921 | 10.958 | **2,8x** |
 | WebFlux | 579 | 2.411 | 4.919 | 8.638 | 11.027 | **19,0x** |
-| MVC | 432 | 1.185 | 3.047 | 3.062 | 3.046 | **7,0x** |
+| MVC | 400 | 1.021 | 5.729 | 7.889 | 8.061 | **20,2x** |
 | FastAPI | 520 | 1.055 | 1.606 | 1.626 | 1.584 | **3,0x** |
 
 ---
@@ -153,7 +153,7 @@ O cenário mais revelador: quem sustenta 200 conexões simultâneas sem falhar?
 | **Go + Gin (GORM)** | **0%** | **0%** | **0%** | **0%** | **0%** |
 | **Node Fastify** | **0%** | **0%** | **0%** | 0.79% | 0.28% |
 | **WebFlux** | **0%** | **0%** | **0%** | **0%** | **0%** |
-| MVC | 0% | **68%** | 0% | 0% | 0% |
+| MVC | 0% | 0% | 0% | 0% | 0% |
 | FastAPI | **87%** | **57%** | **53%** | **43%** | 0% |
 
 ---
@@ -190,8 +190,8 @@ O cenário mais revelador: quem sustenta 200 conexões simultâneas sem falhar?
 
 ### 5º Spring MVC — O clássico limitado
 
-- Sofre com thread-per-request: 68% de erro em 2 CPUs no steady
-- Platô em 4 CPUs (~3.050 req/s) — bottleneck no banco/nginx
+- Sofria com thread-per-request: agora 0% erro em todas as configs
+- Antes platô em ~3.000 req/s; com nativeQuery + ILIKE escala para **8.061 req/s**
 - Performance sólida sem erros em configs ≥4 CPUs
 
 ### 6º FastAPI Async (SQLAlchemy) — O mais fraco em throughput

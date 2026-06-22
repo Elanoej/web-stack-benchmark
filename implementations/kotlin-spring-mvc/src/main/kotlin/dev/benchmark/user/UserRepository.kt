@@ -10,13 +10,19 @@ import java.util.*
 interface UserRepository: JpaRepository<User, UUID> {
     fun findByActiveTrue(pageable: Pageable): Page<User>
 
-    @Query("""
-        SELECT u
-        FROM User u
-        WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%'))
-        AND LOWER(u.city) LIKE LOWER(CONCAT('%', COALESCE(:city, ''), '%'))
-        AND u.active = true
-    """)
+    @Query(value = """
+        SELECT * FROM users
+        WHERE (:name IS NULL OR name ILIKE CONCAT('%', :name, '%'))
+        AND (:city IS NULL OR city ILIKE CONCAT('%', :city, '%'))
+        AND active = true
+        """,
+        countQuery = """
+        SELECT count(*) FROM users
+        WHERE (:name IS NULL OR name ILIKE CONCAT('%', :name, '%'))
+        AND (:city IS NULL OR city ILIKE CONCAT('%', :city, '%'))
+        AND active = true
+        """,
+        nativeQuery = true)
     fun search(
         @Param("name") name: String?,
         @Param("city") city: String?,
