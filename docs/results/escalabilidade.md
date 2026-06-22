@@ -145,7 +145,7 @@ Nestes cenários (carga variável com picos), todas as stacks têm erro < 0,3% e
 ### Ranking geral (12 CPUs, Ramp-up)
 
 | # | Stack | Throughput | p95 | Erros | Escalabilidade |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 | 1 | Rust + Axum (sqlx) | 14578 req/s | 32 ms | 0.00% | 2.1x |
 | 2 | Node Fastify (cluster mode) | 14198 req/s | 33 ms | 0.02% | 4.6x |
 | 3 | Go + Gin (GORM) | 10958 req/s | 43 ms | 0.00% | 2.8x |

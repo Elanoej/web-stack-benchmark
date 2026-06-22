@@ -24,7 +24,7 @@
 ## Ranking Geral (12 CPUs, Ramp-up)
 
 | # | Stack | Throughput | p50 | p95 | Máxima | Erros | Escalabilidade |
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 1 | **Rust + Axum (sqlx)** | **14.578 req/s** | **13,0ms** | **32,2ms** | **74ms** | **0,00%** | **2,1x** |
 | 2 | Node Fastify (cluster mode) | 14.198 req/s | 13ms | 33ms | 79ms | 0,02% | 4,6x |
 | 3 | Go + Gin (GORM) | 10.958 req/s | 17,5ms | 43,3ms | 98ms | 0,00% | 2,8x |
@@ -41,7 +41,7 @@
 ### 1 CPU / 1GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | Throughput | **4.102/s** | 3.296/s | 2.767/s | 147/s | 113/s | 2.500/s |
 | p95 | **85ms** | 101ms | 259ms | 3.631ms | 6.997ms | 493ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **87%** |
@@ -49,7 +49,7 @@
 ### 2 CPUs / 2GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | Throughput | **12.228/s** | 6.004/s | 8.234/s | 669/s | 896/s | 1.798/s |
 | p95 | **26ms** | 63ms | 83ms | 896ms | 1.206ms | 489ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **68%** | **57%** |
@@ -57,7 +57,7 @@
 ### 4 CPUs / 4GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | Throughput | **14.906/s** | 10.302/s | 12.926/s | 1.932/s | 1.421/s | 2.478/s |
 | p95 | **15ms** | 41ms | 36ms | 226ms | 432ms | 451ms |
 | Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **53%** |
@@ -65,7 +65,7 @@
 ### 8 CPUs / 8GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | Throughput | **15.332/s** | 13.577/s | 11.281/s | 4.235/s | 2.464/s | 2.287/s |
 | p95 | **15ms** | 21ms | 23ms | 104ms | 219ms | 324ms |
 | Erros | **0%** | 0.79% | **0%** | **0%** | **0%** | **43%** |
@@ -73,7 +73,7 @@
 ### 12 CPUs / 12GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | Throughput | **15.076/s** | 13.610/s | 11.137/s | 6.507/s | 2.580/s | 1.529/s |
 | p95 | **15ms** | 18ms | 21ms | 71ms | 218ms | 327ms |
 | Erros | **0%** | 0.28% | **0%** | **0%** | **0%** | **0%** |
@@ -87,7 +87,7 @@
 **5 estágios, 0 → 500 VUs em ~80 segundos.** Carga crescente, testa ponto de degradação.
 
 | CPU | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | 1 | **7.032/s** (94ms p95) | 3.112/s (100ms) | 3.959/s (221ms) | 507/s (1.113ms) | 432/s (1.497ms) | 520/s (1.481ms) |
 | 2 | **11.860/s** (55ms p95) | 5.996/s (88ms) | 8.038/s (114ms) | 2.094/s (267ms) | 1.185/s (510ms) | 1.055/s (720ms) |
 | 4 | **14.421/s** (33ms p95) | 10.805/s (53ms) | 10.118/s (50ms) | 4.746/s (141ms) | 3.047/s (187ms) | 1.606/s (463ms) |
@@ -103,7 +103,7 @@
 **Pico repentino 50 → 500 → 50 VUs.** Testa resiliência e recuperação.
 
 | CPU | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | 1 | **2.645/s** (63ms p95, **0% err**) | 1.679/s (72ms, **0% err**) | 1.910/s (203ms, **0% err**) | 1.135/s (614ms, 0,20% err) | 752/s (712ms, 0,83% err) | 454/s (1.398ms, 0,22% err) |
 | 2 | **3.570/s** (15ms p95, **0% err**) | 2.307/s (69ms, **0% err**) | 2.771/s (71ms, **0% err**) | 1.631/s (223ms, 0% err) | 1.659/s (201ms, 0% err) | 938/s (657ms, 0,03% err) |
 | 4 | **3.759/s** (8ms p95, **0% err**) | 3.217/s (27ms, **0% err**) | 3.331/s (25ms, **0% err**) | 2.137/s (111ms, 0% err) | 1.644/s (168ms, 0% err) | 1.224/s (414ms, 0% err) |
