@@ -20,7 +20,8 @@ Entender **como** e **por que** cada stack performa do jeito que performa — n�
 | 2 | Spring WebFlux | Kotlin | Hibernate (R2DBC) | Reativo / non-blocking |
 | 3 | FastAPI + Uvicorn | Python | SQLAlchemy (asyncpg) | Async I/O |
 | 4 | Go + Gin | Go | GORM | Goroutines |
-| 5 | Rust + Axum | Rust | sqlx (tokio-postgres) | Async I/O (Tokio) |
+| 5 | Node Fastify | TypeScript | raw SQL (postgres) | Cluster mode (workers = CPUs) |
+| 6 | Rust + Axum | Rust | sqlx (tokio-postgres) | Async I/O (Tokio) |
 
 ---
 
@@ -120,12 +121,13 @@ web-stack-benchmark/
 │   │   │   ├── steady.js         # 200 VUs, 30s, sem sleep
 │   │   │   ├── ramp-up.js        # 0→500 VUs em estágios, 80s
 │   │   │   └── spike.js          # 50→500→50 VUs, 75s
-│   │   └── generate-all-reports.py  # gera todos os .md automáticos
+│   │   └── (relatórios gerados manualmente via resultados.md)
 ├── implementations/
 │   ├── spring-mvc-kotlin/        # Kotlin + Hibernate (JDBC)
 │   ├── spring-webflux-kotlin/    # Kotlin + Hibernate (R2DBC)
 │   ├── fastapi-async/            # Python + SQLAlchemy (asyncpg)
 │   ├── go-gin/                   # Go + Gin + GORM
+│   ├── node-fastify/             # TypeScript + Fastify + raw SQL
 │   └── rust-axum/                # Rust + Axum + sqlx
 └── docs/
     ├── resultados.md             # relatório consolidado (manual)
@@ -156,12 +158,9 @@ k6 run load-tests/k6/scenarios/spike.js
 
 # 5. Derrubar backend e trocar para outro
 docker compose -f implementations/rust-axum/docker-compose.yml down
-docker compose -f implementations/go-gin/docker-compose.yml --env-file .env up -d --build
+docker compose -f implementations/node-fastify/docker-compose.yml --env-file .env up -d --build
 
-# 6. Gerar relatórios
-python3 load-tests/k6/generate-all-reports.py
-
-# 7. Resetar tudo (inclusive banco)
+# 6. Resetar tudo (inclusive banco)
 docker compose -f infra/docker-compose.yml --env-file .env down -v
 ```
 
@@ -183,11 +182,12 @@ docker compose -f infra/docker-compose.yml --env-file .env down -v
 ## Status
 
 | Stack | Código | Docker | Testado |
-|---|---|---|---|
+|---|---|---|---|---|
 | Go + Gin (GORM) | ✅ | ✅ | ✅ |
 | Rust + Axum (sqlx) | ✅ | ✅ | ✅ |
 | Spring WebFlux (R2DBC) | ✅ | ✅ | ✅ |
 | Spring MVC (JDBC) | ✅ | ✅ | ✅ |
+| Node Fastify (cluster) | ✅ | ✅ | ✅ |
 | FastAPI Async (SQLAlchemy) | ✅ | ✅ | ✅ |
 
 ---
