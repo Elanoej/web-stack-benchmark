@@ -1,6 +1,5 @@
 # Infraestrutura base: postgres + nginx + pgadmin
 # Uso: docker compose -f infra/docker-compose.yml --env-file ../.env up -d
-# pgAdmin em http://localhost:5050 (admin@example.com / admin)
 services:
 
   postgres:
@@ -26,23 +25,13 @@ services:
     image: nginx:alpine
     container_name: benchmark-nginx
     network_mode: "host"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: benchmark-pgadmin
-    network_mode: "host"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_LISTEN_PORT: 5050
+    - NGINX_WORKERS=${CPUS}
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - ./nginx/nginx.conf.template:/tmp/nginx.conf.template:ro
+    command: >
+      sh -c "envsubst '$$NGINX_WORKERS' < /tmp/nginx.conf.template
+      > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
 
 volumes:
   postgres_data:
