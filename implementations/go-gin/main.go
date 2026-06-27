@@ -39,7 +39,7 @@ func main() {
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "5000"
 	}
 
 	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{
@@ -50,8 +50,8 @@ func main() {
 		log.Fatal(err)
 	}
 	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(20)
-	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(30)
+	sqlDB.SetMaxIdleConns(15)
 
 	r := gin.Default()
 
