@@ -1,26 +1,40 @@
-log_format benchmark '$remote_addr - $upstream_addr '
-                     '"$request" $status $body_bytes_sent '
-                     'rt=$request_time ut=$upstream_response_time';
+worker_processes ${NGINX_WORKERS};
 
-upstream benchmark_backend {
-    keepalive 64;
-    keepalive_requests 100;
-    keepalive_timeout 60s;
-    server localhost:5000;
+events {
+    worker_connections 2048;
+    use epoll;
+    multi_accept on;
 }
 
-server {
-    listen 8080;
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
 
-    access_log /var/log/nginx/access.log benchmark;
+    sendfile        on;
+    keepalive_timeout  64;
+    keepalive_requests 1000;
 
-    location / {
-        proxy_pass         http://benchmark_backend;
+    log_format benchmark '$remote_addr - $upstream_addr '
+                         '"$request" $status $body_bytes_sent '
+                         'rt=$request_time ut=$upstream_response_time';
 
-        proxy_http_version 1.1;
-        proxy_set_header   Connection "";
+    upstream benchmark_backend {
+        keepalive 64;
+        keepalive_requests 1000;
+        keepalive_timeout 64;
+        server localhost:5000;
+    }
 
-        proxy_set_header   Host $host;
-        proxy_set_header   X-Real-IP $remote_addr;
+    server {
+        listen 8080;
+        access_log /var/log/nginx/access.log benchmark;
+
+        location / {
+            proxy_pass         http://benchmark_backend;
+            proxy_http_version 1.1;
+            proxy_set_header   Connection "";
+            proxy_set_header   Host $host;
+            proxy_set_header   X-Real-IP $remote_addr;
+        }
     }
 }
