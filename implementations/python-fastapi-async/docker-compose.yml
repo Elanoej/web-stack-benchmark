@@ -9,3 +9,4 @@ services:
     mem_limit: ${MEM_LIMIT:-2G}
     environment:
       DATABASE_URL: postgresql+asyncpg://bench:bench123@localhost:5432/benchmark
+      WORKERS: "${WORKERS:-1}"

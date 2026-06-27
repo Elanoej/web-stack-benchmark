@@ -18,6 +18,4 @@ COPY --from=builder /app/.venv/lib/python3.12/site-packages /usr/local/lib/pytho
 COPY app app
 COPY entrypoint.py .
 
-EXPOSE 5000
-
 CMD ["python", "entrypoint.py"]
