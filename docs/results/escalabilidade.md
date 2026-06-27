@@ -1,7 +1,7 @@
 # Benchmarks — Curva de escalabilidade
 
 > Mesmo banco, mesmos endpoints, mesmos scripts k6. Apenas o backend muda.
-> Todas as stacks limitadas a CPU e RAM via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=10 + max_overflow=20). FastAPI com WORKERS = CPUs + 1.
+> Todas as stacks limitadas a CPU e RAM via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=2 + max_overflow=0). FastAPI com WORKERS = CPUs. PostgreSQL max_connections=30.
 
 ## Throughput (req/s)
 
@@ -12,7 +12,7 @@
 | Node Fastify | 3112 | 5996 | 10805 | 14245 | 14198 |
 | Spring WebFlux | 579 | 2411 | 4919 | 8638 | 11027 |
 | Spring MVC | 400 | 1021 | 5729 | 7889 | 8061 |
-| FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 |
+| FastAPI Async (SQLAlchemy) | 592.7 | 1189.1 | 2272.4 | 3815.5 | 4948.7 |
 
 ### Detalhamento por cenário
 
@@ -25,7 +25,7 @@
 | Node Fastify | 3296 | 6004 | 10302 | 13577 | 13610 |
 | Spring WebFlux | 175 | 732 | 3040 | 6112 | 8020 |
 | Spring MVC | 144 | 266 | 1162 | 4412 | 6284 |
-| FastAPI Async (SQLAlchemy) | 2500 | 1798 | 2478 | 2287 | 1529 |
+| FastAPI Async (SQLAlchemy) | 604.2 | 1197.7 | 2319.2 | 4020.9 | 5237.3 |
 
 **Ramp-up:**
 
@@ -36,7 +36,7 @@
 | Node Fastify | 3112 | 5996 | 10805 | 14245 | 14198 |
 | Spring WebFlux | 579 | 2411 | 4919 | 8638 | 11027 |
 | Spring MVC | 400 | 1021 | 5729 | 7889 | 8061 |
-| FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 |
+| FastAPI Async (SQLAlchemy) | 592.7 | 1189.1 | 2272.4 | 3815.5 | 4948.7 |
 
 **Spike:**
 
@@ -47,7 +47,7 @@
 | Node Fastify | 1679 | 2307 | 3217 | 3730 | 3766 |
 | Spring WebFlux | 1130 | 1653 | 2186 | 2993 | 3387 |
 | Spring MVC | 661 | 1802 | 2655 | 2838 | 2850 |
-| FastAPI Async (SQLAlchemy) | 454 | 938 | 1224 | 1237 | 1211 |
+| FastAPI Async (SQLAlchemy) | 578.3 | 1050.8 | 1448.3 | 1855.3 | 2092.3 |
 
 ## Latência p95 (ms)
 
@@ -58,7 +58,7 @@
 | Node Fastify | 100 | 88 | 53 | 33 | 33 |
 | Spring WebFlux | 1087.00 | 256.92 | 133.40 | 76.46 | 57.91 |
 | Spring MVC | 1795.53 | 699.39 | 107.07 | 88.93 | 87.50 |
-| FastAPI Async (SQLAlchemy) | 1481.05 | 720.06 | 462.70 | 454.96 | 503.47 |
+| FastAPI Async (SQLAlchemy) | 1234.78 | 693.05 | 417.66 | 264.25 | 186.31 |
 
 ## Taxa de Erro (%)
 
@@ -71,7 +71,7 @@
 | Node Fastify | 0.00% | 0.00% | 0.00% | 0.79% | 0.28% |
 | Spring WebFlux | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring MVC | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
-| FastAPI Async (SQLAlchemy) | 87.21% | 57.10% | 53.36% | 43.37% | 0.00% |
+| FastAPI Async (SQLAlchemy) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 
 **Ramp-up:**
 
@@ -93,7 +93,7 @@
 | Node Fastify | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring WebFlux | 0.01% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring MVC | 0.76% | 0.00% | 0.00% | 0.00% | 0.00% |
-| FastAPI Async (SQLAlchemy) | 0.22% | 0.03% | 0.00% | 0.00% | 0.00% |
+| FastAPI Async (SQLAlchemy) | 0.04% | 0.00% | 0.00% | 0.00% | 0.00% |
 
 ## Curva de escalabilidade (Ramp-up)
 
@@ -104,7 +104,7 @@
 | Node Fastify | 3112 | 5996 | 10805 | 14245 | 14198 | 4.6x |
 | Spring WebFlux | 579 | 2411 | 4919 | 8638 | 11027 | 19.0x |
 | Spring MVC | 400 | 1021 | 5729 | 7889 | 8061 | 7.0x |
-| FastAPI Async (SQLAlchemy) | 520 | 1055 | 1606 | 1626 | 1584 | 3.0x |
+| FastAPI Async (SQLAlchemy) | 592.7 | 1189.1 | 2272.4 | 3815.5 | 4948.7 | 8.3x |
 
 ## Análise
 
@@ -112,10 +112,10 @@
 
 O cenário Steady State (200 VUs constantes sem sleep) é o mais agressivo. Ele revela como cada stack lida com pressão constante e sustentada:
 
-- **1 CPU / 1GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, Node Fastify
-- **2 CPUs / 2GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Node Fastify
-- **4 CPUs / 4GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, Node Fastify
-- **8 CPUs / 8GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC
+- **1 CPU / 1GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, Node Fastify, FastAPI Async
+- **2 CPUs / 2GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Node Fastify, FastAPI Async
+- **4 CPUs / 4GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, Node Fastify, FastAPI Async
+- **8 CPUs / 8GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, FastAPI Async
 - **12 CPUs / 12GB**: stacks com 0% erro → Go + Gin (GORM), Rust + Axum (sqlx), Spring WebFlux, Spring MVC, FastAPI Async (SQLAlchemy)
 
 ### Taxa de erro em Steady State
@@ -127,7 +127,7 @@ O cenário Steady State (200 VUs constantes sem sleep) é o mais agressivo. Ele 
 | Node Fastify | 0.00% | 0.00% | 0.00% | 0.79% | 0.28% |
 | Spring WebFlux | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 | Spring MVC | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
-| FastAPI Async (SQLAlchemy) | 87.21% | 57.10% | 53.36% | 43.37% | 0.00% |
+| FastAPI Async (SQLAlchemy) | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% |
 
 **Observações:**
 
@@ -136,7 +136,7 @@ O cenário Steady State (200 VUs constantes sem sleep) é o mais agressivo. Ele 
 - **Spring WebFlux**: também 0% de erro em todas as configs, mas com throughput ~30-50% menor que Rust Axum.
 - **Spring MVC**: sofre com o modelo thread-per-request em cargas mais altas. O throughput é limitado pelo pool de threads do Tomcat.
 - **Node Fastify (cluster mode)**: segundo maior throughput em ramp-up (14.198 req/s em 12 CPUs), superando Go. Latência p95 competitiva (18-33ms) e escalabilidade de 4.6x, mas apresenta pequena taxa de erro em steady state a partir de 8 CPUs (0.79% em 8 CPUs, 0.28% em 12 CPUs).
-- **FastAPI Async (SQLAlchemy + Pydantic)**: overhead do ORM + GIL limita o throughput máximo. A partir de 4 CPUs o erro zera.
+- **FastAPI Async (SQLAlchemy + Pydantic)**: após o pool fix (`pool_size=2`, `max_overflow=0`, `workers=CPUS`) eliminou 100% dos erros e escalou de 1.584 para 4.949 req/s (+212%). Ainda limitada pelo ORM + GIL, mas agora com 0% de erro em todos os cenários.
 
 ### Ramp-up e Spike
 
@@ -151,7 +151,7 @@ Nestes cenários (carga variável com picos), todas as stacks têm erro < 0,3% e
 | 3 | Go + Gin (GORM) | 10958 req/s | 43 ms | 0.00% | 2.8x |
 | 4 | Spring WebFlux | 11027 req/s | 58 ms | 0.23% | 19.0x |
 | 5 | Spring MVC | 8061 req/s | 88 ms | 0.13% | 20.2x |
-| 6 | FastAPI Async (SQLAlchemy) | 1584 req/s | 503 ms | 0.00% | 3.0x |
+| 6 | FastAPI Async (SQLAlchemy) | 4949 req/s | 186 ms | 0.00% | 8.3x |
 
 ### Conclusão
 
@@ -160,4 +160,4 @@ Nestes cenários (carga variável com picos), todas as stacks têm erro < 0,3% e
 3. **Go + Gin (GORM)** mantém a terceira posição com vantagem sobre as stacks JVM. Sua eficiência por núcleo é notável: com 2 CPUs já supera o throughput máximo de todas as stacks concorrentes exceto Rust e Node Fastify.
 4. **Spring WebFlux** é a melhor stack JVM, com escalabilidade consistente (19x de 1 para 12 CPUs em ramp-up), 0% de erro em steady state em todas as configs e throughput de **11.027 req/s** em 12 CPUs (ramp-up) — 14% maior que o resultado anterior.
 5. **Spring MVC** superou a limitação histórica com nativeQuery + ILIKE + ZGC. Saiu de um platô de ~3.000 req/s para **8.061 req/s** em 12 CPUs — ganho de **165%**.
-6. **FastAPI Async (SQLAlchemy + Pydantic)** é a stack mais fraca em throughput bruto. O overhead do ORM + validação + GIL limita o throughput máximo.
+6. **FastAPI Async (SQLAlchemy + Pydantic)** após o pool fix saltou de 1.584 para 4.949 req/s (+212%) e eliminou todos os erros. Ainda é a stack mais fraca em throughput bruto, mas escala 8,3x e compete com Spring MVC em cargas moderadas.

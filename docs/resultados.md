@@ -2,7 +2,7 @@
 
 > Mesmo banco de dados (PostgreSQL 16, 10.000 usuários), mesmos scripts k6, mesmos endpoints.
 > Apenas o backend muda. Todas as stacks limitadas a CPU e RAM via Docker Compose.
-> Pool de conexões: 20 por stack (FastAPI: pool_size=10 + max_overflow=20).
+> Pool de conexões: 20 por stack (FastAPI: pool_size=2 + max_overflow=0, workers=CPUS, PostgreSQL max_connections=30).
 >
 > **Stacks testadas:** Rust + Axum (sqlx), Node Fastify (cluster mode), Go + Gin (GORM), Spring WebFlux (Kotlin, R2DBC), Spring MVC (Kotlin, JDBC), FastAPI Async (Python, SQLAlchemy)
 
@@ -30,7 +30,7 @@
 | 3 | Go + Gin (GORM) | 10.958 req/s | 17,5ms | 43,3ms | 98ms | 0,00% | 2,8x |
 | 4 | Spring WebFlux | 11.027 req/s | 12,5ms | 57,9ms | 97ms | 0,23% | 19,0x |
 | 5 | Spring MVC | 8.061 req/s | 17,3ms | 87,5ms | 420ms | 0,13% | 20,2x |
-| 6 | FastAPI Async (SQLAlchemy) | 1.584 req/s | 67,1ms | 503,5ms | 3.203ms | 0,00% | 3,0x |
+| 6 | FastAPI Async (SQLAlchemy) | 4.949 req/s | 43,6ms | 186,3ms | 1.621ms | 0,00% | 8,3x |
 
 ---
 
@@ -42,43 +42,43 @@
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **4.102/s** | 3.296/s | 2.767/s | 175/s | 144/s | 2.500/s |
-| p95 | **85ms** | 101ms | 259ms | 3.207ms | 5.300ms | 493ms |
-| Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **87%** |
+| Throughput | **4.102/s** | 3.296/s | 2.767/s | 175/s | 144/s | 604/s |
+| p95 | **85ms** | 101ms | 259ms | 3.207ms | 5.300ms | 531ms |
+| Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **0%** |
 
 ### 2 CPUs / 2GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **12.228/s** | 6.004/s | 8.234/s | 732/s | 266/s | 1.798/s |
-| p95 | **26ms** | 63ms | 83ms | 790ms | 2.469ms | 489ms |
-| Erros | **0%** | **0%** | **0%** | **0%** | **68%** | **57%** |
+| Throughput | **12.228/s** | 6.004/s | 8.234/s | 732/s | 266/s | 1198/s |
+| p95 | **26ms** | 63ms | 83ms | 790ms | 2.469ms | 500ms |
+| Erros | **0%** | **0%** | **0%** | **0%** | **68%** | **0%** |
 
 ### 4 CPUs / 4GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **14.906/s** | 10.302/s | 12.926/s | 3.040/s | 1.162/s | 2.478/s |
-| p95 | **15ms** | 41ms | 36ms | 187ms | 584ms | 451ms |
-| Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **53%** |
+| Throughput | **14.906/s** | 10.302/s | 12.926/s | 3.040/s | 1.162/s | 2319/s |
+| p95 | **15ms** | 41ms | 36ms | 187ms | 584ms | 302ms |
+| Erros | **0%** | **0%** | **0%** | **0%** | **0%** | **0%** |
 
 ### 8 CPUs / 8GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **15.332/s** | 13.577/s | 11.281/s | 6.112/s | 4.412/s | 2.287/s |
-| p95 | **15ms** | 21ms | 23ms | 87ms | 158ms | 324ms |
-| Erros | **0%** | 0.79% | **0%** | **0%** | **0%** | **43%** |
+| Throughput | **15.332/s** | 13.577/s | 11.281/s | 6.112/s | 4.412/s | 4021/s |
+| p95 | **15ms** | 21ms | 23ms | 87ms | 158ms | 193ms |
+| Erros | **0%** | 0.79% | **0%** | **0%** | **0%** | **0%** |
 
 ### 12 CPUs / 12GB
 
 | Métrica | Rust + Axum | Node Fastify | Go + Gin (GORM) | WebFlux | MVC | FastAPI |
 |---|---|---|---|---|---|---|
-| Throughput | **15.076/s** | 13.610/s | 11.137/s | 8.020/s | 6.284/s | 1.529/s |
-| p95 | **15ms** | 18ms | 21ms | 64ms | 110ms | 327ms |
+| Throughput | **15.076/s** | 13.610/s | 11.137/s | 8.020/s | 6.284/s | 5237/s |
+| p95 | **15ms** | 18ms | 21ms | 64ms | 110ms | 183ms |
 | Erros | **0%** | 0.28% | **0%** | **0%** | **0%** | **0%** |
 
-> **Análise:** Apenas **Rust + Axum**, **Go + Gin** e **Spring WebFlux** mantiveram **0% de erro em todas as configs** no cenário mais agressivo. Rust lidera em throughput com a menor latência p95.
+> **Análise:** Apenas **Rust + Axum**, **Go + Gin**, **Spring WebFlux** e **FastAPI Async (SQLAlchemy)** mantiveram **0% de erro em todas as configs** no cenário mais agressivo. Rust lidera em throughput com a menor latência p95.
 
 ---
 
@@ -139,7 +139,7 @@ Throughput (req/s) em Ramp-up
 | Go + Gin (GORM) | 3.959 | 8.038 | 10.118 | 10.921 | 10.958 | **2,8x** |
 | WebFlux | 579 | 2.411 | 4.919 | 8.638 | 11.027 | **19,0x** |
 | MVC | 400 | 1.021 | 5.729 | 7.889 | 8.061 | **20,2x** |
-| FastAPI | 520 | 1.055 | 1.606 | 1.626 | 1.584 | **3,0x** |
+| FastAPI | 593 | 1.189 | 2.272 | 3.816 | 4.949 | **8,3x** |
 
 ---
 
@@ -154,7 +154,7 @@ O cenário mais revelador: quem sustenta 200 conexões simultâneas sem falhar?
 | **Node Fastify** | **0%** | **0%** | **0%** | 0.79% | 0.28% |
 | **WebFlux** | **0%** | **0%** | **0%** | **0%** | **0%** |
 | MVC | 0% | 0% | 0% | 0% | 0% |
-| FastAPI | **87%** | **57%** | **53%** | **43%** | 0% |
+| FastAPI | 0% | 0% | 0% | 0% | 0% |
 
 ---
 
@@ -194,14 +194,14 @@ O cenário mais revelador: quem sustenta 200 conexões simultâneas sem falhar?
 - Antes platô em ~3.000 req/s; com nativeQuery + ILIKE escala para **8.061 req/s**
 - Performance sólida sem erros em configs ≥4 CPUs
 
-### 6º FastAPI Async (SQLAlchemy) — O mais fraco em throughput
+### 6º FastAPI Async (SQLAlchemy) — Late bloomer
 
-- Overhead do ORM (SQLAlchemy + Pydantic) + GIL limita o máximo a ~1.600 req/s
-- 87% de erro em 1 CPU no steady state
-- Zera erros a partir de 4 CPUs (steady)
+- Após pool fix (`pool_size=2`, `max_overflow=0`, `workers=CPUS`) saltou de 1.584 para 4.949 req/s (+212%)
+- **0% de erro** em todas as configs e cenários (steady, ramp-up, spike)
+- Overhead do ORM (SQLAlchemy + Pydantic) + GIL ainda limita o máximo a ~5.237 req/s
 
 ### ⚡ Eficiência é tudo
 
 > **Rust Axum com 2 CPUs (11.860 req/s) entrega mais throughput que QUALQUER stack JVM com 12 CPUs.** Go Gin com 2 CPUs (8.038/s) supera o WebFlux com 4 CPUs (4.919/s) — eficiência bruta.
 >
-> Em termos de custo de infraestrutura, Rust Axum é ~4x mais eficiente que WebFlux e ~18x mais eficiente que FastAPI.
+> Em termos de custo de infraestrutura, Rust Axum é ~4x mais eficiente que WebFlux e ~3x mais eficiente que FastAPI.

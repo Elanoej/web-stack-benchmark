@@ -15,6 +15,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
       - ./postgres/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+    command: postgres -c max_connections=30
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bench -d benchmark"]
       interval: 5s
