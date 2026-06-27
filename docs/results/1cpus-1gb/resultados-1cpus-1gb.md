@@ -1,6 +1,6 @@
 # Resultados — 1cpus-1gb
 
-> **Ambiente:** 1 CPUs, 1GB RAM por container. PostgreSQL via Docker. Pool de conexões: 20 por stack (FastAPI: pool_size=2 + max_overflow=0). FastAPI com 1 workers. PostgreSQL max_connections=30. Node Fastify com cluster mode (workers = CPUs).
+> **Ambiente:** 1 CPUs, 1GB RAM por container. PostgreSQL via Docker. Pool de conexões: 30 por stack (FastAPI: pool_size=2 + max_overflow=0, demais stacks atualizadas para 30). FastAPI com 1 workers. PostgreSQL max_connections=30. Node Fastify com cluster mode (workers = CPUs).
 > **Ferramenta:** k6 — 1 execução por cenário.
 > **Endpoints:** `GET /users/hello`, `GET /users?page=0&size=20`, `POST /users/search`.
 
@@ -12,13 +12,13 @@
 
 | Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|------|---|------|---|---|---|
-| Throughput (req/s) | 4102 | 3296 | 2767 | 175 | 143 | 604.2 |
-| Latência média (ms) | 48.54 | 60 | 71.97 | 1134.42 | 1365.90 | 328.32 |
-| Latência p50 (ms) | 65.67 | 51 | 40.61 | 1000.45 | 400.89 | 488.96 |
-| Latência p90 (ms) | 81.59 | 90 | 193.60 | 2588.86 | 4196.21 | 501.33 |
-| Latência p95 (ms) | 84.96 | 101 | 258.55 | 3206.81 | 5300.22 | 531.48 |
-| Latência máxima (ms) | 130 | 3960 | 1117 | 6587 | 13695 | 1516 |
-| Total requisições | 123576 | 99291 | 83424 | 5400 | 4527 | 18468 |
+| Throughput (req/s) | 7656.9 | 3296 | 4249.0 | 175 | 143 | 604.2 |
+| Latência média (ms) | 26.02 | 60 | 46.86 | 1134.42 | 1365.90 | 328.32 |
+| Latência p50 (ms) | 35.74 | 51 | 21.31 | 1000.45 | 400.89 | 488.96 |
+| Latência p90 (ms) | 41.7 | 90 | 107.37 | 2588.86 | 4196.21 | 501.33 |
+| Latência p95 (ms) | 44.01 | 101 | 164.69 | 3206.81 | 5300.22 | 531.48 |
+| Latência máxima (ms) | 58 | 3960 | 506 | 6587 | 13695 | 1516 |
+| Total requisições | 230082 | 99291 | 127887 | 5400 | 4527 | 18468 |
 | Erros | 0,00% | 0,00% | 0,00% | 0,00% | 0,00% | 0,00% |
 
 ---
@@ -27,14 +27,14 @@
 
 | Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|------|---|------|---|---|---|
-| Throughput (req/s) | 7032 | 3112 | 3959 | 579 | 400 | 592.7 |
-| Latência média (ms) | 30.59 | 72 | 54.50 | 378.09 | 553.97 | 371.28 |
-| Latência p50 (ms) | 17.93 | 42 | 11.43 | 295.18 | 392.84 | 145.56 |
-| Latência p90 (ms) | 84.72 | 88 | 164.55 | 983.79 | 1302.36 | 1087.87 |
-| Latência p95 (ms) | 94.05 | 100 | 221.16 | 1087.00 | 1795.53 | 1234.78 |
-| Latência máxima (ms) | 131 | 8926 | 1733 | 1402 | 6006 | 6241 |
-| Total requisições | 562533 | 248940 | 316713 | 46347 | 32013 | 47415 |
-| Erros | 0.09% | 0.002% | 0.12% | 0,00% | 0,00% | 0,00% |
+| Throughput (req/s) | 7709.4 | 3112 | 4246.5 | 579 | 400 | 592.7 |
+| Latência média (ms) | 27.9 | 72 | 50.8 | 378.09 | 553.97 | 371.28 |
+| Latência p50 (ms) | 15.82 | 42 | 12.11 | 295.18 | 392.84 | 145.56 |
+| Latência p90 (ms) | 77.91 | 88 | 127.6 | 983.79 | 1302.36 | 1087.87 |
+| Latência p95 (ms) | 88.72 | 100 | 204.75 | 1087.00 | 1795.53 | 1234.78 |
+| Latência máxima (ms) | 120 | 8926 | 2598 | 1402 | 6006 | 6241 |
+| Total requisições | 616764 | 248940 | 339729 | 46347 | 32013 | 47415 |
+| Erros | 0,01% | 0.002% | 0,03% | 0,00% | 0,00% | 0,00% |
 
 ---
 
@@ -42,13 +42,13 @@
 
 | Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|------|---|------|---|---|---|
-| Throughput (req/s) | 2645 | 1679 | 1910 | 1130 | 661 | 578.3 |
-| Latência média (ms) | 17.76 | 49 | 37.69 | 87.84 | 177.45 | 209.32 |
-| Latência p50 (ms) | 1.59 | 1.6 | 1.44 | 1.92 | 85.93 | 6.96 |
-| Latência p90 (ms) | 57.30 | 59 | 115.51 | 511.07 | 501.59 | 1022.16 |
-| Latência p95 (ms) | 63.21 | 72 | 203.06 | 600.88 | 892.89 | 1220.68 |
-| Latência máxima (ms) | 79 | 6824 | 1267 | 799 | 3905 | 8541 |
-| Total requisições | 198378 | 126054 | 143235 | 84873 | 49590 | 43401 |
+| Throughput (req/s) | 2764.4 | 1679 | 1983.0 | 1130 | 661 | 578.3 |
+| Latência média (ms) | 15.51 | 49 | 34.89 | 87.84 | 177.45 | 209.32 |
+| Latência p50 (ms) | 1.91 | 1.6 | 1.36 | 1.92 | 85.93 | 6.96 |
+| Latência p90 (ms) | 47.97 | 59 | 108.15 | 511.07 | 501.59 | 1022.16 |
+| Latência p95 (ms) | 52.42 | 72 | 193.39 | 600.88 | 892.89 | 1220.68 |
+| Latência máxima (ms) | 72 | 6824 | 1286 | 799 | 3905 | 8541 |
+| Total requisições | 207471 | 126054 | 148899 | 84873 | 49590 | 43401 |
 | Erros | 0,00% | 0,00% | 0,00% | 0,01% | 0,76% | 0,04% |
 
 ---
@@ -57,9 +57,9 @@
 
 | Cenário | 1º | 2º | 3º | 4º | 5º | 6º |
 |---|---|---|---|---|---|---|
-| Steady State | Rust + Axum (sqlx) (4102 req/s) | Node Fastify (3296 req/s) | Go + Gin (GORM) (2767 req/s) | FastAPI Async (SQLAlchemy) (604.2 req/s) | Spring WebFlux (147 req/s) | Spring MVC (144 req/s) |
-| Ramp-up | Rust + Axum (sqlx) (7032 req/s) | Go + Gin (GORM) (3959 req/s) | Node Fastify (3112 req/s) | Spring WebFlux (579 req/s) | FastAPI Async (SQLAlchemy) (592.7 req/s) | Spring MVC (400 req/s) |
-| Spike | Rust + Axum (sqlx) (2645 req/s) | Go + Gin (GORM) (1910 req/s) | Node Fastify (1679 req/s) | Spring WebFlux (1130 req/s) | Spring MVC (661 req/s) | FastAPI Async (SQLAlchemy) (578.3 req/s) |
+| Steady State | Rust + Axum (sqlx) (7656.9 req/s) | Node Fastify (3296 req/s) | Go + Gin (GORM) (4249.0 req/s) | FastAPI Async (SQLAlchemy) (604.2 req/s) | Spring WebFlux (147 req/s) | Spring MVC (144 req/s) |
+| Ramp-up | Rust + Axum (sqlx) (7656.9 req/s) | Go + Gin (GORM) (4249.0 req/s) | Node Fastify (3112 req/s) | Spring WebFlux (579 req/s) | FastAPI Async (SQLAlchemy) (592.7 req/s) | Spring MVC (400 req/s) |
+| Spike | Rust + Axum (sqlx) (7656.9 req/s) | Go + Gin (GORM) (4249.0 req/s) | Node Fastify (1679 req/s) | Spring WebFlux (1130 req/s) | Spring MVC (661 req/s) | FastAPI Async (SQLAlchemy) (578.3 req/s) |
 
 ## Observações
 
