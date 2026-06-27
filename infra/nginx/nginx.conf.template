@@ -1,11 +1,3 @@
-# =============================================================
-# nginx.conf.template — web-stack-benchmark
-# =============================================================
-# Gerado via envsubst pela imagem nginx:alpine.
-# As variáveis ${BACKEND_HOST} e ${BACKEND_PORT} são
-# substituídas automaticamente na inicialização.
-# =============================================================
-
 log_format benchmark '$remote_addr - $upstream_addr '
                      '"$request" $status $body_bytes_sent '
                      'rt=$request_time ut=$upstream_response_time';
