@@ -19,7 +19,7 @@ interface SearchRequest {
   city?: string;
 }
 
-const port = parseInt(process.env.PORT ?? "8080");
+const port = parseInt(process.env.PORT ?? "5000");
 
 const workers = availableParallelism();
 
