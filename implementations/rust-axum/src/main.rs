@@ -64,7 +64,7 @@ async fn main() {
         .statement_cache_capacity(100);
 
     let pool = PgPoolOptions::new()
-        .max_connections(20)
+        .max_connections(30)
         .connect_with(connect_options)
         .await
         .expect("Falha ao conectar no PostgreSQL");

@@ -50,8 +50,8 @@ func main() {
 		log.Fatal(err)
 	}
 	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(20)
-	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(30)
+	sqlDB.SetMaxIdleConns(15)
 
 	r := gin.Default()
 

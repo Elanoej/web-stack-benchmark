@@ -21,8 +21,9 @@ interface SearchRequest {
 
 const port = parseInt(process.env.PORT ?? "8080");
 
+const workers = availableParallelism();
+
 if (cluster.isPrimary) {
-  const workers = availableParallelism();
   console.log(`Primary: forking ${workers} workers`);
   for (let i = 0; i < workers; i++) cluster.fork();
   cluster.on("exit", (worker) => {
@@ -31,7 +32,7 @@ if (cluster.isPrimary) {
   });
 } else {
   const db = postgres(process.env.DATABASE_URL ?? "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable", {
-    max: 20,
+    max: Math.max(2, Math.floor(30 / workers)),
     idle_timeout: 30,
   });
 
