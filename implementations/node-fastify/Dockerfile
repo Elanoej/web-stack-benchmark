@@ -18,6 +18,4 @@ COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-EXPOSE 8080
-
 CMD ["node", "dist/main.js"]
