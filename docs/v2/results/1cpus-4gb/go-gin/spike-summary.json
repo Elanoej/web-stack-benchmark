@@ -1,0 +1,14 @@
+{
+  "stack": "go-gin",
+  "scenario": "spike",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 1994.88,
+  "avg_ms": 34.47,
+  "med_ms": 1.35,
+  "p90_ms": 107.71,
+  "p95_ms": 191.77,
+  "p99_ms": 362.59,
+  "max_ms": 1084.58,
+  "total_requests": 149823,
+  "error_rate_pct": 0
+}

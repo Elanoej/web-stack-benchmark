@@ -1,0 +1,14 @@
+{
+  "stack": "fastapi-async",
+  "scenario": "spike",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 579.04,
+  "avg_ms": 208.47,
+  "med_ms": 7.05,
+  "p90_ms": 987.14,
+  "p95_ms": 1212.53,
+  "p99_ms": 2429.31,
+  "max_ms": 7244.77,
+  "total_requests": 43479,
+  "error_rate_pct": 0
+}

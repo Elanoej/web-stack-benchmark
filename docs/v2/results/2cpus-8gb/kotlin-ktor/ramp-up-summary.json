@@ -1,0 +1,14 @@
+{
+  "stack": "kotlin-ktor",
+  "scenario": "ramp-up",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 5004.5,
+  "avg_ms": 43.05,
+  "med_ms": 39.18,
+  "p90_ms": 85.79,
+  "p95_ms": 93.29,
+  "p99_ms": 104.07,
+  "max_ms": 121.3,
+  "total_requests": 400362,
+  "error_rate_pct": 0
+}

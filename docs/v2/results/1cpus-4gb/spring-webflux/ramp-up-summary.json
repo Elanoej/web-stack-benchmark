@@ -1,0 +1,14 @@
+{
+  "stack": "spring-webflux",
+  "scenario": "ramp-up",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 646.24,
+  "avg_ms": 337.43,
+  "med_ms": 305.11,
+  "p90_ms": 793.66,
+  "p95_ms": 804.17,
+  "p99_ms": 909.11,
+  "max_ms": 1097.98,
+  "total_requests": 51711,
+  "error_rate_pct": 0
+}

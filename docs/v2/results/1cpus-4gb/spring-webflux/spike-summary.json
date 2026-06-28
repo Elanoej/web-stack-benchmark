@@ -1,0 +1,14 @@
+{
+  "stack": "spring-webflux",
+  "scenario": "spike",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 1244.43,
+  "avg_ms": 76.37,
+  "med_ms": 1.59,
+  "p90_ms": 408.14,
+  "p95_ms": 485.34,
+  "p99_ms": 604.03,
+  "max_ms": 793.25,
+  "total_requests": 93402,
+  "error_rate_pct": 0
+}

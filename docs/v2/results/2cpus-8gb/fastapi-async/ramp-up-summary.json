@@ -1,0 +1,14 @@
+{
+  "stack": "fastapi-async",
+  "scenario": "ramp-up",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 597.94,
+  "avg_ms": 368.13,
+  "med_ms": 157.63,
+  "p90_ms": 1080.58,
+  "p95_ms": 1203.16,
+  "p99_ms": 2064.21,
+  "max_ms": 4822.14,
+  "total_requests": 47838,
+  "error_rate_pct": 0
+}

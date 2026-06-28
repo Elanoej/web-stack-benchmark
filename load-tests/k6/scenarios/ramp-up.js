@@ -1,6 +1,8 @@
 import http from "k6/http"
+import { handleSummary } from "../summary.js"
 import { check } from "k6"
-import { BASE_URL, thresholds } from "../config.js"
+import { BASE_URL, summaryTrendStats, thresholds } from "../config.js"
+
 
 // =============================================================
 // CENÁRIO: Ramp-up
@@ -29,6 +31,7 @@ export const options = {
         { duration: "10s", target: 0   },  // recuperação
     ],
     thresholds,
+    summaryTrendStats,
 }
 
 export default function () {
@@ -45,3 +48,5 @@ export default function () {
     )
     check(search, { "search: status 200": (r) => r.status === 200 })
 }
+
+export { handleSummary };

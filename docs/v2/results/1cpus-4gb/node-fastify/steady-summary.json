@@ -1,0 +1,14 @@
+{
+  "stack": "node-fastify",
+  "scenario": "steady",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 3512.78,
+  "avg_ms": 56.72,
+  "med_ms": 46.99,
+  "p90_ms": 84.88,
+  "p95_ms": 96.78,
+  "p99_ms": 129.14,
+  "max_ms": 4208.21,
+  "total_requests": 105885,
+  "error_rate_pct": 0
+}

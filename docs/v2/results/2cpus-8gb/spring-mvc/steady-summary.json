@@ -1,0 +1,14 @@
+{
+  "stack": "spring-mvc",
+  "scenario": "steady",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 242.42,
+  "avg_ms": 817.75,
+  "med_ms": 200.5,
+  "p90_ms": 1695.31,
+  "p95_ms": 2695.77,
+  "p99_ms": 12293.72,
+  "max_ms": 12813.73,
+  "total_requests": 7428,
+  "error_rate_pct": 0
+}

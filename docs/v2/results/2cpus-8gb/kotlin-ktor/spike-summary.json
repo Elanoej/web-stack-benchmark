@@ -1,0 +1,14 @@
+{
+  "stack": "kotlin-ktor",
+  "scenario": "spike",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 2203.35,
+  "avg_ms": 28.05,
+  "med_ms": 8.68,
+  "p90_ms": 68.58,
+  "p95_ms": 72.36,
+  "p99_ms": 81.28,
+  "max_ms": 93.24,
+  "total_requests": 165264,
+  "error_rate_pct": 0
+}
