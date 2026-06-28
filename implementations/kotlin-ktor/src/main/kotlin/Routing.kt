@@ -4,8 +4,9 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.time.Instant
 
 fun Application.configureRouting() {
     routing {
@@ -19,16 +20,23 @@ fun Application.configureRouting() {
             if (size < 1) size = 20
             if (size > 100) size = 100
 
-            val users = transaction {
-                Users.selectAll()
-                    .where { Users.active eq true }
-                    .orderBy(Users.createdAt, SortOrder.DESC)
-                    .limit(size)
-                    .offset((page * size).toLong())
-                    .map { it.toUser() }
+            dataSource.connection.use { conn ->
+                conn.autoCommit = true
+                conn.prepareStatement(
+                    "SELECT id, name, email, city, country, age, active, created_at " +
+                    "FROM users WHERE active = true ORDER BY created_at DESC LIMIT ? OFFSET ?"
+                ).use { stmt ->
+                    stmt.setInt(1, size)
+                    stmt.setInt(2, page * size)
+                    stmt.executeQuery().use { rs ->
+                        val list = mutableListOf<User>()
+                        while (rs.next()) {
+                            list.add(rs.toUser())
+                        }
+                        call.respond(list)
+                    }
+                }
             }
-
-            call.respond(users)
         }
 
         post("/users/search") {
@@ -38,36 +46,61 @@ fun Application.configureRouting() {
             if (size < 1) size = 20
             if (size > 100) size = 100
 
-            val users = transaction {
-                Users.selectAll()
-                    .where {
-                        val cond = Users.active eq true
-                        val withName = if (!body.name.isNullOrBlank()) {
-                            cond and (Users.name ilike "%${body.name}%")
-                        } else cond
-                        val withCity = if (!body.city.isNullOrBlank()) {
-                            withName and (Users.city ilike "%${body.city}%")
-                        } else withName
-                        withCity
-                    }
-                    .orderBy(Users.createdAt, SortOrder.DESC)
-                    .limit(size)
-                    .offset((page * size).toLong())
-                    .map { it.toUser() }
-            }
+            dataSource.connection.use { conn ->
+                conn.autoCommit = true
+                val conditions = mutableListOf<String>()
+                val params = mutableListOf<Any>()
 
-            call.respond(users)
+                if (!body.name.isNullOrBlank()) {
+                    conditions.add("name ILIKE CONCAT('%', ?, '%')")
+                    params.add(body.name)
+                }
+                if (!body.city.isNullOrBlank()) {
+                    conditions.add("city ILIKE CONCAT('%', ?, '%')")
+                    params.add(body.city)
+                }
+
+                val whereClause = if (conditions.isNotEmpty()) " AND ${conditions.joinToString(" AND ")}" else ""
+                val sql =
+                    "SELECT id, name, email, city, country, age, active, created_at " +
+                    "FROM users WHERE active = true$whereClause ORDER BY created_at DESC LIMIT ? OFFSET ?"
+
+                params.add(size)
+                params.add(page * size)
+
+                conn.prepareStatement(sql).use { stmt ->
+                    stmt.bindParams(params)
+                    stmt.executeQuery().use { rs ->
+                        val list = mutableListOf<User>()
+                        while (rs.next()) {
+                            list.add(rs.toUser())
+                        }
+                        call.respond(list)
+                    }
+                }
+            }
         }
     }
 }
 
-infix fun <T : String?> ExpressionWithColumnType<T>.ilike(pattern: String): Op<Boolean> {
-    return object : Op<Boolean>() {
-        override fun toQueryBuilder(queryBuilder: QueryBuilder) {
-            queryBuilder {
-                append(this@ilike)
-                append(" ILIKE '${pattern.replace("'", "''")}'")
-            }
+private fun ResultSet.toUser(): User = User(
+    id = getString("id"),
+    name = getString("name"),
+    email = getString("email"),
+    city = getString("city"),
+    country = getString("country"),
+    age = getInt("age"),
+    active = getBoolean("active"),
+    createdAt = getTimestamp("created_at").toInstant(),
+)
+
+private fun PreparedStatement.bindParams(params: List<Any>) {
+    params.forEachIndexed { index, param ->
+        when (param) {
+            is String -> setString(index + 1, param)
+            is Int -> setInt(index + 1, param)
+            is Long -> setLong(index + 1, param)
+            else -> setObject(index + 1, param)
         }
     }
 }

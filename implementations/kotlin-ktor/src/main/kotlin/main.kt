@@ -8,20 +8,22 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun main() {
+val dataSource: HikariDataSource by lazy {
     val dbUrl = System.getenv("DATABASE_URL")
         ?: "postgres://bench:bench123@localhost:5432/benchmark?sslmode=disable"
-    val port = (System.getenv("PORT") ?: "5000").toInt()
 
-    val config = HikariConfig().apply {
+    HikariConfig().apply {
         jdbcUrl = dbUrl
         maximumPoolSize = 30
         minimumIdle = 15
         driverClassName = "org.postgresql.Driver"
         isAutoCommit = false
         transactionIsolation = "TRANSACTION_READ_COMMITTED"
-    }
-    val dataSource = HikariDataSource(config)
+    }.let { HikariDataSource(it) }
+}
+
+fun main() {
+    val port = (System.getenv("PORT") ?: "5000").toInt()
 
     Database.connect(dataSource)
 
