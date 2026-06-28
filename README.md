@@ -18,7 +18,7 @@ Entender **como** e **por que** cada stack performa do jeito que performa — n�
 |---|---|---|---|---|
 | 1 | Spring MVC | Kotlin | Hibernate (JDBC) | Thread-per-request (bloqueante) |
 | 2 | Spring WebFlux | Kotlin | Hibernate (R2DBC) | Reativo / non-blocking |
-| 3 | FastAPI + Uvicorn | Python | SQLAlchemy (asyncpg) | Async I/O |
+| 3 | FastAPI + Uvicorn | Python | asyncpg nativo | Async I/O |
 | 4 | Go + Gin | Go | GORM | Goroutines |
 | 5 | Node Fastify | TypeScript | raw SQL (postgres) | Cluster mode (workers = CPUs) |
 | 6 | Rust + Axum | Rust | sqlx (tokio-postgres) | Async I/O (Tokio) |
@@ -125,7 +125,7 @@ web-stack-benchmark/
 ├── implementations/
 │   ├── spring-mvc-kotlin/        # Kotlin + Hibernate (JDBC)
 │   ├── spring-webflux-kotlin/    # Kotlin + Hibernate (R2DBC)
-│   ├── fastapi-async/            # Python + SQLAlchemy (asyncpg)
+│   ├── fastapi-async/            # Python + asyncpg nativo
 │   ├── go-gin/                   # Go + Gin + GORM
 │   ├── node-fastify/             # TypeScript + Fastify + raw SQL
 │   └── rust-axum/                # Rust + Axum + sqlx
@@ -188,7 +188,7 @@ docker compose -f infra/docker-compose.yml --env-file .env down -v
 | Spring WebFlux (R2DBC) | ✅ | ✅ | ✅ |
 | Spring MVC (JDBC) | ✅ | ✅ | ✅ |
 | Node Fastify (cluster) | ✅ | ✅ | ✅ |
-| FastAPI Async (SQLAlchemy) | ✅ | ✅ | ✅ |
+| FastAPI Async (asyncpg) | ✅ | ✅ | ✅ |
 
 ---
 
