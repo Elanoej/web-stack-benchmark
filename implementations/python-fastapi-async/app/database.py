@@ -1,7 +1,8 @@
+import os
 from collections.abc import AsyncGenerator
 
+import asyncpg
 from pydantic_settings import BaseSettings
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 class Settings(BaseSettings):
@@ -10,24 +11,29 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-engine = create_async_engine(
-    settings.database_url,
-    pool_size=2,
-    max_overflow=0,
-    pool_pre_ping=False,
-)
+_workers = int(os.getenv("WORKERS", "1"))
+pool_size = int(os.getenv("POOL_SIZE", str(max(2, 30 // _workers))))
 
-async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+pool: asyncpg.Pool | None = None
 
 
 async def init_db():
-    pass
+    global pool
+    dsn = settings.database_url.replace("postgresql+asyncpg://", "postgresql://")
+    pool = await asyncpg.create_pool(
+        dsn=dsn,
+        min_size=pool_size,
+        max_size=pool_size,
+    )
 
 
 async def close_db():
-    await engine.dispose()
+    if pool is not None:
+        await pool.close()
 
 
-async def get_db() -> AsyncGenerator[AsyncSession]:
-    async with async_session() as session:
-        yield session
+async def get_db() -> AsyncGenerator[asyncpg.Connection]:
+    if pool is None:
+        raise RuntimeError("pool not initialized")
+    async with pool.acquire() as conn:
+        yield conn
