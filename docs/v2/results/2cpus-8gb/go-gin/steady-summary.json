@@ -1,0 +1,14 @@
+{
+  "stack": "go-gin",
+  "scenario": "steady",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 8735.05,
+  "avg_ms": 22.8,
+  "med_ms": 15.08,
+  "p90_ms": 55.24,
+  "p95_ms": 73.37,
+  "p99_ms": 113.42,
+  "max_ms": 287.85,
+  "total_requests": 262473,
+  "error_rate_pct": 0
+}

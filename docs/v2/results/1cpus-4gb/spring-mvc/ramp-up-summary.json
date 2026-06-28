@@ -1,0 +1,14 @@
+{
+  "stack": "spring-mvc",
+  "scenario": "ramp-up",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 420.06,
+  "avg_ms": 527.16,
+  "med_ms": 301.85,
+  "p90_ms": 1204.82,
+  "p95_ms": 1798.73,
+  "p99_ms": 2990.67,
+  "max_ms": 8704.19,
+  "total_requests": 33615,
+  "error_rate_pct": 0
+}

@@ -1,0 +1,14 @@
+{
+  "stack": "kotlin-ktor",
+  "scenario": "steady",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 1222.33,
+  "avg_ms": 162.83,
+  "med_ms": 116.49,
+  "p90_ms": 308.4,
+  "p95_ms": 408.66,
+  "p99_ms": 893.26,
+  "max_ms": 1586.87,
+  "total_requests": 36996,
+  "error_rate_pct": 0
+}

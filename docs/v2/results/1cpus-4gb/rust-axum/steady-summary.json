@@ -1,0 +1,14 @@
+{
+  "stack": "rust-axum",
+  "scenario": "steady",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 7708.7,
+  "avg_ms": 25.84,
+  "med_ms": 35.37,
+  "p90_ms": 41.7,
+  "p95_ms": 43.83,
+  "p99_ms": 45.86,
+  "max_ms": 63.37,
+  "total_requests": 231669,
+  "error_rate_pct": 0
+}

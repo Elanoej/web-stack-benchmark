@@ -1,0 +1,17 @@
+for cfg in 1cpus-4gb 2cpus-8gb; do                                                                                                                                                                              ✖ ✹ ✭
+  cpus="${cfg%%cpus-*}"; mem="${cfg#*-}"; mem="${mem%%gb}"
+  echo "=== kotlin-ktor $cfg ==="
+  echo "CPUS=$cpus" > .env && echo "MEM_LIMIT=${mem}G" >> .env
+  docker compose -f implementations/kotlin-ktor/docker-compose.yml --env-file .env up -d --build
+  sleep 15
+  for i in $(seq 1 30); do curl -sf localhost:5000/hello >/dev/null 2>&1 && break; sleep 2; done
+  for s in steady ramp-up spike; do
+    k6 run --quiet \
+      --env STACK=kotlin-ktor \
+      --env SCENARIO=$s \
+      --env CFG=$cfg \
+      load-tests/k6/scenarios/$s.js
+  done
+  docker compose -f implementations/kotlin-ktor/docker-compose.yml down
+done
+echo "CPUS=12" > .env && echo "MEM_LIMIT=12G" >> .env

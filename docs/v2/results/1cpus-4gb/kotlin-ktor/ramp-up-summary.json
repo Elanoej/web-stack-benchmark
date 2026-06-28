@@ -1,0 +1,14 @@
+{
+  "stack": "kotlin-ktor",
+  "scenario": "ramp-up",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 2635.59,
+  "avg_ms": 81.96,
+  "med_ms": 73.75,
+  "p90_ms": 161.13,
+  "p95_ms": 175.08,
+  "p99_ms": 197.08,
+  "max_ms": 270.98,
+  "total_requests": 210849,
+  "error_rate_pct": 0
+}

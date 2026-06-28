@@ -1,6 +1,7 @@
 import http from "k6/http"
+import { handleSummary } from "../summary.js"
 import { check, sleep } from "k6"
-import { BASE_URL, thresholds } from "../config.js"
+import { BASE_URL, summaryTrendStats, thresholds } from "../config.js"
 
 // =============================================================
 // CENÁRIO: Spike
@@ -44,6 +45,7 @@ export const options = {
         http_req_duration: ["p(95)<2000"], // até 2s no pico
         http_req_failed:   ["rate<0.05"],  // até 5% de erro
     },
+    summaryTrendStats,
 }
 
 export default function () {
@@ -64,3 +66,5 @@ export default function () {
     // conexões TCP abertas demais ao mesmo tempo
     sleep(0.1)
 }
+
+export { handleSummary }; 

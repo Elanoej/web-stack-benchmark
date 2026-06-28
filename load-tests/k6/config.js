@@ -12,3 +12,5 @@ export const thresholds = {
     // Menos de 1% de erros
     http_req_failed: ['rate<0.01'],
 }
+
+export const summaryTrendStats = ["avg", "med", "max", "p(90)", "p(95)", "p(99)"];

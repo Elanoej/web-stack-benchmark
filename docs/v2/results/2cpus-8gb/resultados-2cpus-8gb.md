@@ -8,45 +8,45 @@
 
 ## Steady State (200 VUs, 30s)
 
-| Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| Throughput (req/s) | 13.152 | 6.321 | 8.504 | 3.081 | 743,2692690947448 | 179,2271236178084 | 599,4655834289185 |
-| Latência média (ms) | 15,11 | 31,53 | 23,42 | 64,70 | 267,42 | 1.104,48 | 330,93 |
-| Latência p50 (ms) | 20,91 | 28,16 | 15,55 | 48,12 | 280,35 | 247,49 | 489,93 |
-| Latência p90 (ms) | 23,67 | 50,36 | 56,83 | 100,20 | 493,93 | 2.101,43 | 508,77 |
-| Latência p95 (ms) | 24,47 | 61,51 | 75,12 | 117,89 | 686,56 | 3.602,51 | 903,92 |
-| Latência máxima (ms) | 66,07 | 1.384,04 | 392,65 | 682,50 | 2.114,31 | 15.104,77 | 1.548,35 |
-| Total requisições | 394.974 | 190.029 | 255.513 | 92.808 | 22.581 | 5.514 | 18.327 |
+| Throughput (req/s) | 12.969 | 8.735 | 6.464 | 3.343 | 752 | 242 | 601 |
+| Latência média (ms) | 15,33 | 22,80 | 30,82 | 59,62 | 265,08 | 817,75 | 330,29 |
+| Latência p50 (ms) | 21,32 | 15,08 | 27,92 | 44,43 | 278,33 | 200,50 | 488,56 |
+| Latência p90 (ms) | 24,00 | 55,24 | 48,35 | 95,27 | 498,61 | 1.695,31 | 506,54 |
+| Latência p95 (ms) | 24,67 | 73,37 | 57,39 | 119,39 | 700,06 | 2.695,77 | 537,35 |
+| Latência máxima (ms) | 49,72 | 287,85 | 1.394,82 | 693,07 | 3.374,17 | 12.813,73 | 1.499,01 |
+| Total requisições | 389.439 | 262.473 | 194.412 | 100.662 | 22.797 | 7.428 | 18.369 |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
 
 ---
 
 ## Ramp-up (0 → 500 VUs, 80s)
 
-| Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| Throughput (req/s) | 12.885 | 6.096 | 8.476 | 4.798 | 2.632 | 953,7516322022059 | 602,737309781229 |
-| Latência média (ms) | 16,64 | 35,33 | 25,37 | 44,90 | 82,02 | 228,51 | 364,50 |
-| Latência p50 (ms) | 10,03 | 28,29 | 9,83 | 40,01 | 78,66 | 106,66 | 159,49 |
-| Latência p90 (ms) | 46,08 | 73,51 | 68,79 | 88,43 | 202,07 | 594,30 | 1.064,64 |
-| Latência p95 (ms) | 52,63 | 87,54 | 104,70 | 96,95 | 212,49 | 802,70 | 1.213,13 |
-| Latência máxima (ms) | 68,48 | 1.740,37 | 798,71 | 132,37 | 384,99 | 3.109,79 | 4.774,17 |
-| Total requisições | 1.030.812 | 487.713 | 678.069 | 383.835 | 210.600 | 76.320 | 48.222 |
-| Erros | **0,000%** | 0,006% | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
+| Throughput (req/s) | 12.825 | 8.674 | 6.139 | 5.005 | 2.580 | 1.086 | 598 |
+| Latência média (ms) | 16,72 | 24,78 | 35,06 | 43,05 | 83,66 | 200,36 | 368,13 |
+| Latência p50 (ms) | 9,99 | 9,55 | 28,12 | 39,18 | 85,91 | 102,03 | 157,63 |
+| Latência p90 (ms) | 46,20 | 67,21 | 75,82 | 85,79 | 200,05 | 501,75 | 1.080,58 |
+| Latência p95 (ms) | 52,20 | 102,36 | 92,10 | 93,29 | 212,62 | 704,26 | 1.203,16 |
+| Latência máxima (ms) | 69,78 | 740,68 | 227,91 | 121,30 | 382,59 | 3.802,70 | 4.822,14 |
+| Total requisições | 1.026.024 | 693.906 | 491.151 | 400.362 | 206.433 | 86.859 | 47.838 |
+| Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
 
 ---
 
 ## Spike (50 → 500 → 50 VUs, 75s)
 
-| Métrica | Rust + Axum (sqlx) | Node Fastify | Go + Gin (GORM) | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
+| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring WebFlux | Spring MVC | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| Throughput (req/s) | 3.698 | 2.253 | 2.932 | 2.189 | 1.719 | 1.813 | 588,7250795621545 |
-| Latência média (ms) | 3,12 | 26,75 | 12,71 | 28,44 | 45,52 | 41,27 | 204,40 |
-| Latência p50 (ms) | 1,31 | 7,96 | 2,09 | 6,88 | 1,47 | 3,45 | 7,20 |
-| Latência p90 (ms) | 8,51 | 50,07 | 39,30 | 69,27 | 190,30 | 110,32 | 1.002,01 |
-| Latência p95 (ms) | 11,06 | 60,74 | 58,09 | 72,99 | 197,24 | 199,88 | 1.199,49 |
-| Latência máxima (ms) | 39,17 | 1.672,74 | 349,57 | 100,90 | 296,86 | 1.420,85 | 7.234,35 |
-| Total requisições | 277.572 | 169.098 | 219.972 | 164.253 | 128.973 | 136.146 | 44.166 |
+| Throughput (req/s) | 3.684 | 2.952 | 2.324 | 2.203 | 1.732 | 1.807 | 579 |
+| Latência média (ms) | 3,29 | 12,38 | 24,81 | 28,05 | 44,94 | 41,56 | 208,47 |
+| Latência p50 (ms) | 1,30 | 2,11 | 9,50 | 8,68 | 1,47 | 3,45 | 7,05 |
+| Latência p90 (ms) | 9,46 | 38,11 | 63,00 | 68,58 | 185,76 | 111,23 | 987,14 |
+| Latência p95 (ms) | 11,88 | 56,44 | 75,06 | 72,36 | 192,41 | 200,34 | 1.212,53 |
+| Latência máxima (ms) | 27,51 | 364,69 | 955,44 | 93,24 | 357,19 | 1.017,04 | 7.244,77 |
+| Total requisições | 276.297 | 221.544 | 174.438 | 165.264 | 130.008 | 135.744 | 43.479 |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
 
 ---
@@ -55,15 +55,15 @@
 
 | Cenário | 1º | 2º | 3º | 4º | 5º | 6º | 7º |
 |---|---|---|---|---|---|---|---|
-| Steady State | Rust + Axum (sqlx) (13.152 req/s) | Go + Gin (GORM) (8.504 req/s) | Node Fastify (6.321 req/s) | Kotlin Ktor (Exposed) (3.081 req/s) | Spring WebFlux (743 req/s) | FastAPI Async (SQLAlchemy) (599 req/s) | Spring MVC (179 req/s) |
-| Ramp-up | Rust + Axum (sqlx) (12.885 req/s) | Go + Gin (GORM) (8.476 req/s) | Node Fastify (6.096 req/s) | Kotlin Ktor (Exposed) (4.798 req/s) | Spring WebFlux (2.632 req/s) | Spring MVC (954 req/s) | FastAPI Async (SQLAlchemy) (603 req/s) |
-| Spike | Rust + Axum (sqlx) (3.698 req/s) | Go + Gin (GORM) (2.932 req/s) | Node Fastify (2.253 req/s) | Kotlin Ktor (Exposed) (2.189 req/s) | Spring MVC (1.813 req/s) | Spring WebFlux (1.719 req/s) | FastAPI Async (SQLAlchemy) (589 req/s) |
+| Steady State | Rust + Axum (sqlx) (12.969 req/s) | Go + Gin (GORM) (8.735 req/s) | Node Fastify (6.464 req/s) | Kotlin Ktor (Exposed) (3.343 req/s) | Spring WebFlux (752 req/s) | FastAPI Async (SQLAlchemy) (601 req/s) | Spring MVC (242 req/s) |
+| Ramp-up | Rust + Axum (sqlx) (12.825 req/s) | Go + Gin (GORM) (8.674 req/s) | Node Fastify (6.139 req/s) | Kotlin Ktor (Exposed) (5.005 req/s) | Spring WebFlux (2.580 req/s) | Spring MVC (1.086 req/s) | FastAPI Async (SQLAlchemy) (598 req/s) |
+| Spike | Rust + Axum (sqlx) (3.684 req/s) | Go + Gin (GORM) (2.952 req/s) | Node Fastify (2.324 req/s) | Kotlin Ktor (Exposed) (2.203 req/s) | Spring MVC (1.807 req/s) | Spring WebFlux (1.732 req/s) | FastAPI Async (SQLAlchemy) (579 req/s) |
 
 ## Observações
 
 - **Rust + Axum (sqlx)** teve o maior throughput geral em 2cpus-8gb.
 - **Kotlin Ktor (Exposed)** estreia como a melhor stack JVM, superando WebFlux e MVC.
-- Todas as stacks com **0% de erro** em steady state.
-- Em **Steady State**: melhor throughput = **Rust + Axum (sqlx)** (13.152 req/s), menor p95 = **Rust + Axum (sqlx)** (24,47 ms)
-- Em **Ramp-up**: melhor throughput = **Rust + Axum (sqlx)** (12.885 req/s), menor p95 = **Rust + Axum (sqlx)** (52,63 ms)
-- Em **Spike**: melhor throughput = **Rust + Axum (sqlx)** (3.698 req/s), menor p95 = **Rust + Axum (sqlx)** (11,06 ms)
+- **0% de erro** em todos os cenários para todas as stacks.
+- Em **Steady State**: melhor throughput = **Rust + Axum (sqlx)** (12.969 req/s), menor p95 = **Rust + Axum (sqlx)** (24,67 ms)
+- Em **Ramp-up**: melhor throughput = **Rust + Axum (sqlx)** (12.825 req/s), menor p95 = **Rust + Axum (sqlx)** (52,20 ms)
+- Em **Spike**: melhor throughput = **Rust + Axum (sqlx)** (3.684 req/s), menor p95 = **Rust + Axum (sqlx)** (11,88 ms)

@@ -1,0 +1,14 @@
+{
+  "stack": "go-gin",
+  "scenario": "ramp-up",
+  "cfg": "1cpus-4gb",
+  "throughput_rps": 4264.19,
+  "avg_ms": 50.58,
+  "med_ms": 12.09,
+  "p90_ms": 126.82,
+  "p95_ms": 204.7,
+  "p99_ms": 398.04,
+  "max_ms": 1697.74,
+  "total_requests": 341142,
+  "error_rate_pct": 0
+}

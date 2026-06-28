@@ -1,0 +1,14 @@
+{
+  "stack": "spring-webflux",
+  "scenario": "ramp-up",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 2580.32,
+  "avg_ms": 83.66,
+  "med_ms": 85.91,
+  "p90_ms": 200.05,
+  "p95_ms": 212.62,
+  "p99_ms": 263.01,
+  "max_ms": 382.59,
+  "total_requests": 206433,
+  "error_rate_pct": 0
+}
