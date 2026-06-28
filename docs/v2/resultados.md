@@ -29,8 +29,8 @@
 | 1 | **Rust + Axum (sqlx)** | **12.825 req/s** | **52,2 ms** | **70 ms** | **0,000%** | **1.7x** |
 | 2 | Go + Gin (GORM) | 8.674 req/s | 102,4 ms | 741 ms | 0,000% | 2.0x |
 | 3 | Node Fastify | 6.139 req/s | 92,1 ms | 228 ms | 0,000% | 1.8x |
-| 4 | Kotlin Ktor (Exposed) | 5.005 req/s | 93,3 ms | 121 ms | 0,000% | 1.9x |
-| 5 | Spring MVC | 4.364 req/s | 118,9 ms | 1.268 ms | 0,000% | 2.2x |
+| 4 | Kotlin Ktor (Native Query) | **5.133 req/s** | **90,4 ms** | **119 ms** | **0,000%** | **1.9x** |
+| 5 | Spring MVC | 4.774 req/s | 116,2 ms | 485 ms | 0,000% | 2.4x |
 | 6 | Spring WebFlux | 2.594 req/s | 213,1 ms | 384 ms | 0,000% | 3.6x |
 | 7 | FastAPI Async (SQLAlchemy) | 598 req/s | 1.203,2 ms | 4.822 ms | 0,000% | 1.0x |
 
@@ -42,18 +42,18 @@
 
 ### 1 CPU / 4GB
 
-| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | FastAPI Async (SQLAlchemy) | Spring MVC | Spring WebFlux |
+| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | FastAPI Async (SQLAlchemy) | Spring MVC | Spring WebFlux |
 |---|---|---|---|---|---|---|---|
-| Throughput | **7.709** | 4.329 | 3.513 | 1.222 | 609 | 407 | 189 |
-| p95 | **43,83 ms** | 160,85 ms | 96,78 ms | 408,66 ms | 904,88 ms | 1.288,90 ms | 2.998,66 ms |
+| Throughput | **7.709** | 4.329 | 3.513 | **1.472** | 609 | 387 | 189 |
+| p95 | **43,83 ms** | 160,85 ms | 96,78 ms | **319,78 ms** | 904,88 ms | 1.646,77 ms | 2.998,66 ms |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
 
 ### 2 CPU / 8GB
 
-| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
+| Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| Throughput | **12.969** | 8.735 | 6.464 | 3.343 | 1.335 | 745 | 601 |
-| p95 | **24,67 ms** | 73,37 ms | 57,39 ms | 119,39 ms | 292,28 ms | 700,17 ms | 537,35 ms |
+| Throughput | **12.969** | 8.735 | 6.464 | **3.715** | 1.564 | 745 | 601 |
+| p95 | **24,67 ms** | 73,37 ms | 57,39 ms | **105,08 ms** | 255,53 ms | 700,17 ms | 537,35 ms |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
 
 
@@ -63,10 +63,10 @@
 
 **0 → 500 VUs em ~80 segundos.**
 
-| Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
+| Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| 1 CPU | **7.633/s (87,0ms)** | 4.264/s (204,7ms) | 3.375/s (158,8ms) | 2.636/s (175,1ms) | 1.941/s (198,9ms) | 726/s (707,7ms) | 588/s (1.261,0ms) |
-| 2 CPU | **12.825/s (52,2ms)** | 8.674/s (102,4ms) | 6.139/s (92,1ms) | 5.005/s (93,3ms) | 4.364/s (118,9ms) | 2.594/s (213,1ms) | 598/s (1.203,2ms) |
+| 1 CPU | **7.633/s (87,0ms)** | 4.264/s (204,7ms) | 3.375/s (158,8ms) | **2.753/s (168,7ms)** | 1.978/s (200,0ms) | 726/s (707,7ms) | 588/s (1.261,0ms) |
+| 2 CPU | **12.825/s (52,2ms)** | 8.674/s (102,4ms) | 6.139/s (92,1ms) | **5.133/s (90,4ms)** | 4.774/s (116,2ms) | 2.594/s (213,1ms) | 598/s (1.203,2ms) |
 
 ---
 
@@ -74,10 +74,10 @@
 
 **Pico repentino 50 → 500 → 50 VUs.**
 
-| Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Exposed) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
+| Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (SQLAlchemy) |
 |---|---|---|---|---|---|---|---|
-| 1 CPU | **2.750/s (56,8ms, 0%)** | 1.995/s (191,8ms, 0%) | 1.727/s (105,7ms, 0%) | 1.632/s (161,3ms, 0%) | 1.596/s (198,1ms, 0%) | 1.271/s (485,4ms, 0%) | 579/s (1.226,8ms, 0%) |
-| 2 CPU | **3.684/s (11,9ms, 0%)** | 2.952/s (56,4ms, 0%) | 2.324/s (75,1ms, 0%) | 2.203/s (72,4ms, 0%) | 2.111/s (111,2ms, 0%) | 1.720/s (197,6ms, 0%) | 579/s (1.212,5ms, 0%) |
+| 1 CPU | **2.750/s (56,8ms, 0%)** | 1.995/s (191,8ms, 0%) | 1.727/s (105,7ms, 0%) | **1.683/s (144,8ms, 0%)** | 1.645/s (190,1ms, 0%) | 1.271/s (485,4ms, 0%) | 579/s (1.226,8ms, 0%) |
+| 2 CPU | **3.684/s (11,9ms, 0%)** | 2.952/s (56,4ms, 0%) | 2.324/s (75,1ms, 0%) | **2.266/s (66,9ms, 0%)** | 2.179/s (100,7ms, 0%) | 1.720/s (197,6ms, 0%) | 579/s (1.212,5ms, 0%) |
 
 ---
 
@@ -88,8 +88,8 @@
 | Rust + Axum (sqlx) | 7.633 | 12.825 | **1.7x** |
 | Go + Gin (GORM) | 4.264 | 8.674 | **2.0x** |
 | Node Fastify | 3.375 | 6.139 | **1.8x** |
-| Kotlin Ktor (Exposed) | 2.636 | 5.005 | **1.9x** |
-| Spring MVC | 1.941 | 4.364 | **2.2x** |
+| Kotlin Ktor (Native Query) | 2.753 | 5.133 | **1.9x** |
+| Spring MVC | 1.978 | 4.774 | **2.4x** |
 | Spring WebFlux | 726 | 2.594 | **3.6x** |
 | FastAPI Async (SQLAlchemy) | 588 | 598 | **1.0x** |
 
@@ -104,8 +104,8 @@ v1 com 1GB/2GB RAM vs v2 com 4GB/8GB RAM.
 | Rust + Axum (sqlx) | 7.633 vs 7.709 (-1,0%) | 12.825 vs 13.375 (-4,1%) |
 | Go + Gin (GORM) | 4.264 vs 4.246 (+0,4%) | 8.674 vs 8.668 (+0,1%) |
 | Node Fastify | 3.375 vs 3.144 (+7,3%) | 6.139 vs 5.994 (+2,4%) |
-| Kotlin Ktor (Exposed) | 2.636 vs — (não testado na v1) | 5.005 vs — (não testado na v1) |
-| Spring MVC | 1.941 vs 405,6 (+378,6%) | 4.364 vs 994,2 (+338,9%) |
+| Kotlin Ktor (Native Query) | 2.753 vs — (não testado na v1) | 5.133 vs — (não testado na v1) |
+| Spring MVC | 1.978 vs 405,6 (+387,7%) | 4.774 vs 994,2 (+380,2%) |
 | Spring WebFlux | 726 vs 587,1 (+23,7%) | 2.594 vs 2.396 (+8,3%) |
 | FastAPI Async (SQLAlchemy) | 588 vs 592,7 (-0,8%) | 598 vs 1.189 (-49,7%) |
 
@@ -113,14 +113,14 @@ v1 com 1GB/2GB RAM vs v2 com 4GB/8GB RAM.
 
 ## Conclusão
 
-A v2 trouxe o **Kotlin Ktor** como nova stack, que estreia em **4º lugar geral**. O **Spring MVC** surpreendeu na nova rodada de testes, saltando para **5º lugar** e superando o **Spring WebFlux** em todos os cenários — resultado de melhor aproveitamento do pool de conexões e da CPU extra.
+A v2 trouxe o **Kotlin Ktor** como nova stack, que com native query atingiu **5.133 req/s** (2 CPUs, ramp-up) — um ganho de até +20% sobre o Exposed DSL. A native query no Ktor trouxe benefício real, especialmente em Steady State (+11% a +20%).
 
 ### Ranking Final v2 (2 CPUs / 8GB, Ramp-up)
 
 1. **Rust + Axum (sqlx)**: 12.825 req/s, p95 52,2ms, 0,000% de erro
 2. **Go + Gin (GORM)**: 8.674 req/s, p95 102,4ms, 0,000% de erro
 3. **Node Fastify**: 6.139 req/s, p95 92,1ms, 0,000% de erro
-4. **Kotlin Ktor (Exposed)**: 5.005 req/s, p95 93,3ms, 0,000% de erro
-5. **Spring MVC**: 4.364 req/s, p95 118,9ms, 0,000% de erro
+4. **Kotlin Ktor (Native Query)**: 5.133 req/s, p95 90,4ms, 0,000% de erro
+5. **Spring MVC**: 4.774 req/s, p95 116,2ms, 0,000% de erro
 6. **Spring WebFlux**: 2.594 req/s, p95 213,1ms, 0,000% de erro
 7. **FastAPI Async (SQLAlchemy)**: 598 req/s, p95 1.203,2ms, 0,000% de erro
