@@ -43,7 +43,7 @@
 ### 1 CPU / 4GB
 
 | Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | FastAPI Async (asyncpg) | Spring MVC | Spring WebFlux |
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | Throughput | **7.709** | 4.329 | 3.513 | **1.472** | 1.255 | 387 | 189 |
 | p95 | **43,83 ms** | 160,85 ms | 96,78 ms | **319,78 ms** | 479,57 ms | 1.646,77 ms | 2.998,66 ms |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
@@ -51,7 +51,7 @@
 ### 2 CPU / 8GB
 
 | Métrica | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (asyncpg) |
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | Throughput | **12.969** | 8.735 | 6.464 | **3.715** | 1.564 | 745 | 2.473 |
 | p95 | **24,67 ms** | 73,37 ms | 57,39 ms | **105,08 ms** | 255,53 ms | 700,17 ms | 365,86 ms |
 | Erros | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** | **0,000%** |
@@ -64,7 +64,7 @@
 **0 → 500 VUs em ~80 segundos.**
 
 | Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (asyncpg) |
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 1 CPU | **7.633/s (87,0ms)** | 4.264/s (204,7ms) | 3.375/s (158,8ms) | **2.753/s (168,7ms)** | 1.978/s (200,0ms) | 726/s (707,7ms) | 1.267/s (741,3ms) |
 | 2 CPU | **12.825/s (52,2ms)** | 8.674/s (102,4ms) | 6.139/s (92,1ms) | **5.133/s (90,4ms)** | 4.774/s (116,2ms) | 2.594/s (213,1ms) | 2.460/s (481,8ms) |
 
@@ -75,7 +75,7 @@
 **Pico repentino 50 → 500 → 50 VUs.**
 
 | Config | Rust + Axum (sqlx) | Go + Gin (GORM) | Node Fastify | Kotlin Ktor (Native Query) | Spring MVC | Spring WebFlux | FastAPI Async (asyncpg) |
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 1 CPU | **2.750/s (56,8ms, 0%)** | 1.995/s (191,8ms, 0%) | 1.727/s (105,7ms, 0%) | **1.683/s (144,8ms, 0%)** | 1.645/s (190,1ms, 0%) | 1.271/s (485,4ms, 0%) | 1.163/s (552,8ms, 0%) |
 | 2 CPU | **3.684/s (11,9ms, 0%)** | 2.952/s (56,4ms, 0%) | 2.324/s (75,1ms, 0%) | **2.266/s (66,9ms, 0%)** | 2.179/s (100,7ms, 0%) | 1.720/s (197,6ms, 0%) | 1.535/s (345,4ms, 0%) |
 
