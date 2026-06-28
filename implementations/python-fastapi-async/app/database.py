@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncGenerator
 
 from pydantic_settings import BaseSettings
@@ -10,9 +11,12 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+_workers = int(os.getenv("WORKERS", "1"))
+pool_size = int(os.getenv("POOL_SIZE", str(max(2, 30 // _workers))))
+
 engine = create_async_engine(
     settings.database_url,
-    pool_size=2,
+    pool_size=pool_size,
     max_overflow=0,
     pool_pre_ping=False,
 )
