@@ -1,9 +1,7 @@
+import asyncpg
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models import User
 from app.schemas import HelloResponse, SearchRequest, UserResponse
 
 router = APIRouter(tags=["users"])
@@ -18,19 +16,15 @@ async def hello() -> HelloResponse:
 async def list_users(
     page: int = Query(0, ge=0),
     size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db),
+    conn: asyncpg.Connection = Depends(get_db),
 ) -> list[UserResponse]:
-    stmt = (
-        select(User)
-        .where(User.active.is_(True))
-        .order_by(User.created_at.desc())
-        .offset(page * size)
-        .limit(size)
+    rows = await conn.fetch(
+        "SELECT id, name, email, city, country, age, active, created_at "
+        "FROM users WHERE active = TRUE "
+        "ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+        size, page * size,
     )
-
-    result = await db.execute(stmt)
-    rows = result.scalars().all()
-    return [UserResponse.model_validate(r) for r in rows]
+    return [UserResponse.model_validate(dict(r)) for r in rows]
 
 
 @router.post("/users/search")
@@ -38,17 +32,28 @@ async def search_users(
     body: SearchRequest,
     page: int = Query(0, ge=0),
     size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db),
+    conn: asyncpg.Connection = Depends(get_db),
 ) -> list[UserResponse]:
-    stmt = select(User).where(User.active.is_(True))
+    clauses = ["active = TRUE"]
+    params: list = []
+    idx = 1
 
     if body.name:
-        stmt = stmt.where(User.name.ilike(f"%{body.name}%"))
+        clauses.append(f"name ILIKE ${idx}")
+        params.append(f"%{body.name}%")
+        idx += 1
     if body.city:
-        stmt = stmt.where(User.city.ilike(f"%{body.city}%"))
+        clauses.append(f"city ILIKE ${idx}")
+        params.append(f"%{body.city}%")
+        idx += 1
 
-    stmt = stmt.order_by(User.created_at.desc()).offset(page * size).limit(size)
+    where = " AND ".join(clauses)
+    params.extend([size, page * size])
 
-    result = await db.execute(stmt)
-    rows = result.scalars().all()
-    return [UserResponse.model_validate(r) for r in rows]
+    rows = await conn.fetch(
+        f"SELECT id, name, email, city, country, age, active, created_at "
+        f"FROM users WHERE {where} "
+        f"ORDER BY created_at DESC LIMIT ${idx} OFFSET ${idx + 1}",
+        *params,
+    )
+    return [UserResponse.model_validate(dict(r)) for r in rows]
