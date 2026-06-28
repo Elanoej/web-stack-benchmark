@@ -182,7 +182,7 @@ docker compose -f infra/docker-compose.yml --env-file .env down -v
 ## Status
 
 | Stack | Código | Docker | Testado |
-|---|---|---|---|---|
+|---|---|---|---|
 | Go + Gin (GORM) | ✅ | ✅ | ✅ |
 | Rust + Axum (sqlx) | ✅ | ✅ | ✅ |
 | Spring WebFlux (R2DBC) | ✅ | ✅ | ✅ |
