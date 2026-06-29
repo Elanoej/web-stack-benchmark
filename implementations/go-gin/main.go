@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -8,23 +10,18 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type User struct {
-	ID        string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	Name      string    `gorm:"type:varchar(100)" json:"name"`
-	Email     string    `gorm:"type:varchar(150)" json:"email"`
-	City      string    `gorm:"type:varchar(100)" json:"city"`
-	Country   string    `gorm:"type:varchar(100)" json:"country"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	City      string    `json:"city"`
+	Country   string    `json:"country"`
 	Age       int       `json:"age"`
 	Active    bool      `json:"active"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-}
-
-func (User) TableName() string {
-	return "users"
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type SearchRequest struct {
@@ -42,16 +39,12 @@ func main() {
 		port = "5000"
 	}
 
-	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{
-		SkipDefaultTransaction: true,
-		PrepareStmt:            true,
-	})
+	db, err := sql.Open("pgx", dbUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(30)
-	sqlDB.SetMaxIdleConns(15)
+	db.SetMaxOpenConns(30)
+	db.SetMaxIdleConns(15)
 
 	r := gin.Default()
 
@@ -69,15 +62,29 @@ func main() {
 			size = 100
 		}
 
-		var users []User
-		result := db.WithContext(c.Request.Context()).
-			Where("active = ?", true).
-			Order("created_at DESC").
-			Offset(page * size).
-			Limit(size).
-			Find(&users)
-		if result.Error != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		rows, err := db.QueryContext(c.Request.Context(),
+			`SELECT id, name, email, city, country, age, active, created_at
+			 FROM users WHERE active = $1
+			 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+			true, size, page*size,
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer rows.Close()
+
+		users := make([]User, 0, size)
+		for rows.Next() {
+			var u User
+			if err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.City, &u.Country, &u.Age, &u.Active, &u.CreatedAt); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			users = append(users, u)
+		}
+		if err := rows.Err(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -100,23 +107,42 @@ func main() {
 			size = 100
 		}
 
-		query := db.WithContext(c.Request.Context()).Where("active = ?", true)
+		query := "SELECT id, name, email, city, country, age, active, created_at FROM users WHERE active = true"
+		args := make([]any, 0, 4)
+		idx := 1
 
 		if body.Name != nil && *body.Name != "" {
-			query = query.Where("name ILIKE ?", "%"+*body.Name+"%")
+			query += fmt.Sprintf(" AND name ILIKE $%d", idx)
+			idx++
+			args = append(args, "%"+*body.Name+"%")
 		}
 		if body.City != nil && *body.City != "" {
-			query = query.Where("city ILIKE ?", "%"+*body.City+"%")
+			query += fmt.Sprintf(" AND city ILIKE $%d", idx)
+			idx++
+			args = append(args, "%"+*body.City+"%")
 		}
 
-		var users []User
-		result := query.
-			Order("created_at DESC").
-			Offset(page * size).
-			Limit(size).
-			Find(&users)
-		if result.Error != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET $%d", idx, idx+1)
+		args = append(args, size, page*size)
+
+		rows, err := db.QueryContext(c.Request.Context(), query, args...)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer rows.Close()
+
+		users := make([]User, 0, size)
+		for rows.Next() {
+			var u User
+			if err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.City, &u.Country, &u.Age, &u.Active, &u.CreatedAt); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			users = append(users, u)
+		}
+		if err := rows.Err(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
