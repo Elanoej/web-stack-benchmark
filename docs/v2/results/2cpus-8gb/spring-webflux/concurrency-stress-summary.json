@@ -1,0 +1,14 @@
+{
+  "stack": "spring-webflux",
+  "scenario": "concurrency-stress",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 1242.27,
+  "avg_ms": 561.41,
+  "med_ms": 377.22,
+  "p90_ms": 916.56,
+  "p95_ms": 1006.56,
+  "p99_ms": 1385.69,
+  "max_ms": 51693.78,
+  "total_requests": 130177,
+  "error_rate_pct": 2.31
+}

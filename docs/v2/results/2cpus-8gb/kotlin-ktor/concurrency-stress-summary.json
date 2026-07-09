@@ -1,0 +1,14 @@
+{
+  "stack": "kotlin-ktor",
+  "scenario": "concurrency-stress",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 3594.05,
+  "avg_ms": 230.7,
+  "med_ms": 144.37,
+  "p90_ms": 178.84,
+  "p95_ms": 190.91,
+  "p99_ms": 217.81,
+  "max_ms": 60001,
+  "total_requests": 377095,
+  "error_rate_pct": 0.93
+}

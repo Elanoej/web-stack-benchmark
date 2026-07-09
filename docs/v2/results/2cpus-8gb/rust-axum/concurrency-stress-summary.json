@@ -1,0 +1,14 @@
+{
+  "stack": "rust-axum",
+  "scenario": "concurrency-stress",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 9384.45,
+  "avg_ms": 80.8,
+  "med_ms": 56.66,
+  "p90_ms": 89.67,
+  "p95_ms": 94.76,
+  "p99_ms": 105.03,
+  "max_ms": 60000.95,
+  "total_requests": 985326,
+  "error_rate_pct": 0.33
+}
