@@ -22,6 +22,7 @@ Entender **como** e **por que** cada stack performa do jeito que performa — n�
 | 4 | Go + Gin | Go | pgx (raw SQL) | Goroutines |
 | 5 | Node Fastify | TypeScript | raw SQL (postgres) | Cluster mode (workers = CPUs) |
 | 6 | Rust + Axum | Rust | sqlx (tokio-postgres) | Async I/O (Tokio) |
+| 7 | Quarkus | Java | Hibernate ORM Panache (JDBC) | Thread-per-request (bloqueante) |
 
 ---
 
@@ -128,7 +129,8 @@ web-stack-benchmark/
 │   ├── fastapi-async/            # Python + asyncpg nativo
 │   ├── go-gin/                   # Go + Gin + pgx (raw SQL)
 │   ├── node-fastify/             # TypeScript + Fastify + raw SQL
-│   └── rust-axum/                # Rust + Axum + sqlx
+│   ├── rust-axum/                # Rust + Axum + sqlx
+│   └── quarkus/                  # Java + Hibernate ORM Panache (JDBC)
 └── docs/
     ├── resultados.md             # relatório consolidado (manual)
     └── results/
@@ -189,6 +191,7 @@ docker compose -f infra/docker-compose.yml --env-file .env down -v
 | Spring MVC (JDBC) | ✅ | ✅ | ✅ |
 | Node Fastify (cluster) | ✅ | ✅ | ✅ |
 | FastAPI Async (asyncpg) | ✅ | ✅ | ✅ |
+| Quarkus (Panache JDBC) | ✅ | ✅ | ⏳ |
 
 ---
 

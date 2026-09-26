@@ -161,3 +161,16 @@ Nestes cenários (carga variável com picos), todas as stacks têm erro < 0,3% e
 4. **Spring WebFlux** é a melhor stack JVM, com escalabilidade consistente (17.8x de 1 para 12 CPUs em ramp-up), 0% de erro em steady state em todas as configs.
 5. **Spring MVC** superou a limitação histórica com nativeQuery + ILIKE + ZGC: **8.547 req/s** em 12 CPUs.
 6. **FastAPI Async (SQLAlchemy + Pydantic)** após o pool fix saltou de 1.584 para **4.949 req/s** (+212%) e eliminou todos os erros. Ainda é a stack mais fraca em throughput bruto, mas escala 8.4x.
+
+---
+
+## Quarkus (v2) — Resultados 1cpu-4GB / 2cpu-8GB
+
+> **Nota:** Configurações v2 (4GB/8GB RAM) — diferentes das configurações v1 acima.
+
+| Config | Throughput (Ramp-up) | p95 (Ramp-up) | Throughput (Steady) | p95 (Steady) | Throughput (Spike) | p95 (Spike) | Erros |
+|---|---|---|---|---|---|---|---|
+| 1 CPU / 4GB | 1.511 req/s | 390 ms | 89 req/s | 21.860 ms | 1.780 req/s | 196 ms | 0,43% (steady) |
+| 2 CPU / 8GB | 3.922 req/s | 110 ms | 1.019 req/s | 302 ms | 2.749 req/s | 76 ms | 0,00% |
+
+**Escalabilidade (Ramp-up): 2,6x** — Quarkus com modelo thread-per-request (Panache JDBC blocking) escala bem com mais CPUs, similar ao Spring MVC. Em 1 CPU sofre saturação no Steady State (p95 22s).

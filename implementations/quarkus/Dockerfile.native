@@ -1,0 +1,21 @@
+FROM docker.io/graalvm/graalvm-ce:23-ol9 AS builder
+
+WORKDIR /app
+
+COPY pom.xml .
+COPY src ./src
+
+RUN ./mvnw -B -DskipTests -Pnative package
+
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/target/quarkus-1.0.0-SNAPSHOT-runner /app/quarkus
+
+EXPOSE 5000
+
+ENV QUARKUS_HTTP_PORT=5000
+ENV QUARKUS_HTTP_HOST=0.0.0.0
+
+CMD ["./quarkus"]

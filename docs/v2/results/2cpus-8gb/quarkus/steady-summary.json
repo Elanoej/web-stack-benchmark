@@ -1,0 +1,14 @@
+{
+  "stack": "quarkus",
+  "scenario": "steady",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 1018.63,
+  "avg_ms": 195.53,
+  "med_ms": 105.01,
+  "p90_ms": 288.04,
+  "p95_ms": 302.31,
+  "p99_ms": 1336.71,
+  "max_ms": 9460.63,
+  "total_requests": 30861,
+  "error_rate_pct": 0
+}

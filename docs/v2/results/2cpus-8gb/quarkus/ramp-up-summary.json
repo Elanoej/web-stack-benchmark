@@ -1,0 +1,14 @@
+{
+  "stack": "quarkus",
+  "scenario": "ramp-up",
+  "cfg": "2cpus-8gb",
+  "throughput_rps": 3922.14,
+  "avg_ms": 54.91,
+  "med_ms": 76.09,
+  "p90_ms": 100.81,
+  "p95_ms": 109.68,
+  "p99_ms": 186.33,
+  "max_ms": 279.01,
+  "total_requests": 313800,
+  "error_rate_pct": 0
+}
